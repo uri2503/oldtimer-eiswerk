@@ -134,14 +134,17 @@
   /* WERT */
   .wert-section { margin-bottom:16px; }
   .wert-title { font-size:11px; letter-spacing:.15em; text-transform:uppercase; color:var(--muted); margin-bottom:14px; }
-  .wert-bar-row { margin-bottom:12px; }
-  .wert-bar-label { display:flex; justify-content:space-between; font-size:12px; margin-bottom:5px; }
-  .wert-bar-label .wbl-name { color:#bbb; }
-  .wert-bar-label .wbl-val  { font-weight:700; }
-  .wert-bar-track { height:7px; background:var(--grey2); border-radius:3px; overflow:hidden; }
-  .wert-bar-fill  { height:100%; border-radius:3px; transition:width 1.1s ease; }
-  .bar-inv  { background:var(--blue); }
-  .bar-wert { background:var(--ice2); }
+  /* SÄULEN-CHART */
+  .saeulen-chart { display:flex; gap:16px; align-items:flex-end; margin-bottom:20px; height:190px; }
+  .saeule-wrap { flex:1; display:flex; flex-direction:column; align-items:center; height:100%; justify-content:flex-end; }
+  .saeule-euro { font-size:13px; font-weight:700; text-align:center; margin-bottom:6px; line-height:1.3; }
+  .saeule-bar { width:100%; border-radius:4px 4px 0 0; transition:height 1.3s cubic-bezier(.4,0,.2,1); min-height:4px; }
+  .saeule-bar.inv  { background:linear-gradient(180deg,#e74c3c 0%,#c0392b 100%); }
+  .saeule-bar.wert { background:linear-gradient(180deg,#a8d8ea 0%,#1a6b8a 100%); }
+  .saeule-label { font-size:10px; color:var(--muted); text-align:center; letter-spacing:.06em; text-transform:uppercase; margin-top:8px; }
+  .saeule-note  { font-size:10px; color:#555; text-align:center; margin-top:2px; }
+  .saeulen-faktor { text-align:center; font-size:12px; color:var(--muted); margin-bottom:16px; }
+  .saeulen-faktor strong { color:var(--ice2); font-size:16px; }
 
   .wert-fazit { background:#091820; border:1px solid #1a3a4a; border-radius:5px; padding:16px; font-size:13px; line-height:1.65; color:#a8d0e0; }
   .wert-fazit strong { color:var(--ice2); }
@@ -442,7 +445,9 @@
 // ══════════════════════════════════════════════
 // CONFIG — Supabase Proxy URL (wie alle anderen RC-Tools)
 // ══════════════════════════════════════════════
-const PROXY_URL = 'https://ysqzdqazcgyuzdorauiq.supabase.co/functions/v1/claude-proxy';
+const PROXY_URL   = 'https://ysqzdqazcgyuzdorauiq.supabase.co/functions/v1/claude-proxy';
+const SUPA_URL    = 'https://ysqzdqazcgyuzdorauiq.supabase.co';
+const SUPA_ANON   = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlzcXpkcWF6Y2d5dXpkb3JhdWlxIiwicm9sZSI6ImFub24iLCJpYXQiOjE2OTY3NTI0MjksImV4cCI6MjAxMjMyODQyOX0.RpNpOmNqLXr6YmjDYa8nM6HRJrGQmqmvJZLxfGNhQHc';
 
 // ══════════════════════════════════════════════
 // DATENBANK
@@ -654,8 +659,12 @@ async function runAI(){
 
   try {
     const content=[];
-    state.photos.slice(0,3).forEach(p=>{
-      const [header,b64]=p.dataUrl.split(',');
+    // Bilder komprimieren vor API-Call
+    const compressedPhotos = await Promise.all(
+      state.photos.slice(0,3).map(p => compressImage(p.dataUrl, 1200, 0.75))
+    );
+    compressedPhotos.forEach(dataUrl=>{
+      const [header,b64]=dataUrl.split(',');
       const mime=header.match(/:(.*?);/)[1];
       content.push({type:'image',source:{type:'base64',media_type:mime,data:b64}});
     });
@@ -701,6 +710,52 @@ Beginne mit: "Zustandseinschätzung: Note [1-5]."`});
     resStatus.innerHTML=`<span>ℹ️</span><span>${state.aiNote}</span>`;
     btn5.disabled=false;
   }
+}
+
+// Bildkomprimierung
+function compressImage(dataUrl, maxW, quality){
+  return new Promise(resolve=>{
+    const img=new Image();
+    img.onload=()=>{
+      const scale=Math.min(1, maxW/img.width);
+      const w=Math.round(img.width*scale);
+      const h=Math.round(img.height*scale);
+      const canvas=document.createElement('canvas');
+      canvas.width=w; canvas.height=h;
+      canvas.getContext('2d').drawImage(img,0,0,w,h);
+      resolve(canvas.toDataURL('image/jpeg', quality));
+    };
+    img.src=dataUrl;
+  });
+}
+
+// Anfrage in Supabase speichern
+async function saveAnfrage(fzName, kosten, potenzial){
+  try {
+    await fetch(`${SUPA_URL}/rest/v1/eiswerk_anfragen`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'apikey': SUPA_ANON,
+        'Authorization': `Bearer ${SUPA_ANON}`,
+        'Prefer': 'return=minimal'
+      },
+      body: JSON.stringify({
+        fahrzeug:       fzName,
+        marke:          state.marke || state.freitext,
+        baureihe:       state.baureihe,
+        baujahr:        document.getElementById('inp-baujahr').value || null,
+        fahrzeug_note:  state.fahrzeugNote || null,
+        unterboden:     state.zustand,
+        versiegelung:   state.versiegelung,
+        kosten_min:     kosten.min,
+        kosten_max:     kosten.max,
+        marktpotenzial: potenzial || null,
+        ai_analyse:     state.aiNote || null,
+        erstellt_am:    new Date().toISOString()
+      })
+    });
+  } catch(e){ console.warn('Supabase save failed:', e); }
 }
 
 function zustandToNote(z){
@@ -756,21 +811,25 @@ function buildResult(){
     const maxBar = Math.max(invMax, stg, 1);
     const faktor = stg > 0 ? (stg/invMax).toFixed(1) : '—';
 
+    const maxH = 150; // px Säulenhöhe max
+    const invH = Math.round(invMax/maxBar*maxH);
+    const stgH = Math.round(stg/maxBar*maxH);
     document.getElementById('wert-bars').innerHTML=`
-      <div class="wert-bar-row">
-        <div class="wert-bar-label">
-          <span class="wbl-name">Ihre Investition (max.)</span>
-          <span class="wbl-val" style="color:var(--ice2)">${fmt(invMax)}</span>
+      <div class="saeulen-chart">
+        <div class="saeule-wrap">
+          <div class="saeule-euro" style="color:#e74c3c">${fmt(invMax)}</div>
+          <div class="saeule-bar inv" style="height:${invH}px"></div>
+          <div class="saeule-label">Investition</div>
+          <div class="saeule-note">max. Aufwand</div>
         </div>
-        <div class="wert-bar-track"><div class="wert-bar-fill bar-inv" style="width:${Math.round(invMax/maxBar*100)}%"></div></div>
-      </div>
-      <div class="wert-bar-row">
-        <div class="wert-bar-label">
-          <span class="wbl-name">Marktpotenzial bei Verbesserung Note ${cur} → ${nxt}</span>
-          <span class="wbl-val" style="color:var(--ice)">${fmt(stg)}</span>
+        <div class="saeule-wrap">
+          <div class="saeule-euro" style="color:var(--ice2)">${fmt(stg)}</div>
+          <div class="saeule-bar wert" style="height:${stgH}px"></div>
+          <div class="saeule-label">Marktpotenzial</div>
+          <div class="saeule-note">Note ${cur} → ${nxt}</div>
         </div>
-        <div class="wert-bar-track"><div class="wert-bar-fill bar-wert" style="width:${Math.round(stg/maxBar*100)}%"></div></div>
       </div>
+      <div class="saeulen-faktor">Hebel: <strong>${faktor}x</strong> — das Potenzial übersteigt die Investition um das ${faktor}-fache</div>
     `;
 
     // DEFENSIVERE Formulierung
@@ -796,7 +855,17 @@ function buildResult(){
     `Kostenschätzung: ${fmtR(strahlMin+versMin,strahlMax+versMax)}\n\n`+
     `Bitte um Rückruf oder Terminvorschlag. Vielen Dank!`
   );
-  document.getElementById('wa-link').href=`https://wa.me/49XXXXXXXXXX?text=${msg}`;
+  // Anfrage speichern
+  const kosten={min:strahlMin+versMin, max:strahlMax+versMax};
+  const potenzial = (mo && state.fahrzeugNote>0) ? (()=>{
+    const keys=['n1','n2','n3','n4','n5'];
+    const cur=Math.min(5,Math.max(1,state.fahrzeugNote));
+    const nxt=Math.max(1,cur-1);
+    return mo[keys[nxt-1]] - mo[keys[cur-1]];
+  })() : null;
+  saveAnfrage(fzName, kosten, potenzial);
+
+  document.getElementById('wa-link').href=`https://wa.me/491727409769?text=${msg}`;
 }
 
 // ══════════════════════════════════════════════
