@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Terminbestätigung – Oldtimer Eiswerk</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Raleway:wght@300;400;600;700&family=Playfair+Display:ital,wght@0,600;1,400&display=swap');
+:root {
+  --black:#0d0d0d; --blue:#1a6b8a; --ice:#a8d8ea; --ice2:#7bbfd4;
+  --white:#f5f5f5; --grey1:#1a1a1a; --grey2:#2a2a2a; --grey3:#3d3d3d;
+  --muted:#888; --green:#27ae60;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--black);color:var(--white);font-family:'Raleway',sans-serif;min-height:100vh;}
+header{border-bottom:1px solid var(--grey2);padding:16px 24px;display:flex;align-items:center;gap:12px;}
+.logo-mark{width:40px;height:40px;background:var(--blue);display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:16px;color:#fff;}
+.logo-name{font-family:'Playfair Display',serif;font-size:18px;}
+.logo-sub{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);}
+.container{max-width:560px;margin:0 auto;padding:40px 24px;}
+.eyebrow{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--blue);margin-bottom:12px;display:flex;align-items:center;gap:8px;}
+.eyebrow::before{content:'';display:inline-block;width:24px;height:2px;background:var(--blue);}
+h1{font-family:'Playfair Display',serif;font-size:clamp(24px,4vw,34px);line-height:1.2;margin-bottom:16px;}
+h1 em{font-style:italic;color:var(--ice);}
+.sub{color:#aaa;font-size:14px;line-height:1.7;margin-bottom:32px;}
+.fahrzeug-box{background:var(--grey1);border:1px solid var(--grey2);border-radius:6px;padding:18px 20px;margin-bottom:28px;}
+.fz-label{font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);margin-bottom:6px;}
+.fz-name{font-family:'Playfair Display',serif;font-size:18px;margin-bottom:10px;}
+.fz-detail{font-size:12px;color:#aaa;}
+.slot-title{font-size:12px;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);margin-bottom:14px;}
+.slot-cards{display:flex;flex-direction:column;gap:12px;margin-bottom:28px;}
+.slot-card{background:var(--grey1);border:2px solid var(--grey2);border-radius:6px;padding:20px;cursor:pointer;transition:border-color .2s,background .2s;display:flex;align-items:center;gap:16px;}
+.slot-card:hover{border-color:var(--blue);}
+.slot-card.selected{border-color:var(--blue);background:#091820;}
+.slot-card.selected .slot-radio::after{opacity:1;}
+.slot-radio{width:20px;height:20px;border:2px solid var(--grey3);border-radius:50%;flex-shrink:0;position:relative;transition:border-color .2s;}
+.slot-card.selected .slot-radio{border-color:var(--blue);}
+.slot-radio::after{content:'';position:absolute;inset:4px;background:var(--blue);border-radius:50%;opacity:0;transition:opacity .2s;}
+.slot-info{}
+.slot-datum{font-size:16px;font-weight:700;margin-bottom:3px;}
+.slot-uhrzeit{font-size:13px;color:var(--muted);}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:14px 28px;font-family:'Raleway',sans-serif;font-size:13px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;border:none;border-radius:3px;cursor:pointer;transition:background .2s;width:100%;justify-content:center;}
+.btn-primary{background:var(--blue);color:#fff;}
+.btn-primary:hover{background:#155a75;}
+.btn:disabled{opacity:.4;cursor:not-allowed;}
+.success-box{background:#091a10;border:1px solid #2a5a2a;border-radius:8px;padding:28px;text-align:center;}
+.success-icon{font-size:48px;margin-bottom:16px;}
+.success-title{font-family:'Playfair Display',serif;font-size:22px;margin-bottom:10px;color:#2ecc71;}
+.success-text{font-size:14px;color:#aaa;line-height:1.7;}
+.success-termin{font-size:18px;font-weight:700;color:var(--white);margin:16px 0;padding:14px;background:rgba(39,174,96,.1);border-radius:4px;}
+.loading{text-align:center;padding:60px 0;color:var(--muted);}
+.spinner{width:32px;height:32px;border:2px solid var(--grey2);border-top-color:var(--blue);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 16px;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.error-box{background:#1a0808;border:1px solid #4a1010;border-radius:6px;padding:24px;text-align:center;color:#e74c3c;}
+footer{border-top:1px solid var(--grey2);padding:20px 24px;text-align:center;font-size:11px;color:#555;margin-top:40px;}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo-mark">OE</div>
+  <div>
+    <div class="logo-name">Oldtimer Eiswerk</div>
+    <div class="logo-sub">Baden-Württemberg</div>
+  </div>
+</header>
+
+<div class="container" id="container">
+  <div class="loading">
+    <div class="spinner"></div>
+    Terminvorschläge werden geladen…
+  </div>
+</div>
+
+<footer>© 2026 Oldtimer Eiswerk Baden-Württemberg · info@oldtimer-eiswerk.de</footer>
+
+<script>
+const SUPA_URL  = 'https://ysqzdqazcgyuzdorauiq.supabase.co';
+const SUPA_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlzcXpkcWF6Y2d5dXpkb3JhdWlxIiwicm9sZSI6ImFub24iLCJpYXQiOjE2OTY3NTI0MjksImV4cCI6MjAxMjMyODQyOX0.RpNpOmNqLXr6YmjDYa8nM6HRJrGQmqmvJZLxfGNhQHc';
+const HEADERS   = {'apikey':SUPA_ANON,'Authorization':`Bearer ${SUPA_ANON}`,'Content-Type':'application/json'};
+
+let selectedSlot = null;
+let vorschlag    = null;
+let anfrage      = null;
+
+function fmt(s){
+  if(!s) return '—';
+  const d = new Date(s);
+  return {
+    datum: d.toLocaleDateString('de-DE',{weekday:'long',day:'2-digit',month:'long',year:'numeric'}),
+    uhrzeit: d.toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'})+' Uhr'
+  };
+}
+
+async function load(){
+  const token = new URLSearchParams(window.location.search).get('token');
+  if(!token){ showError('Ungültiger Link.'); return; }
+
+  try {
+    const vData = await fetch(
+      `${SUPA_URL}/rest/v1/eiswerk_terminvorschlaege?token=eq.${token}&select=*`,
+      {headers:HEADERS}
+    ).then(r=>r.json());
+
+    if(!vData?.length){ showError('Dieser Link ist nicht mehr gültig oder wurde bereits verwendet.'); return; }
+    vorschlag = vData[0];
+
+    if(vorschlag.status==='bestaetigt'){
+      showBestaetigt(vorschlag.bestaetigt_slot);
+      return;
+    }
+
+    // Anfrage laden
+    const aData = await fetch(
+      `${SUPA_URL}/rest/v1/eiswerk_anfragen?id=eq.${vorschlag.anfrage_id}&select=*`,
+      {headers:HEADERS}
+    ).then(r=>r.json());
+    anfrage = aData?.[0] || null;
+
+    showAuswahl();
+  } catch(e){
+    // Demo ohne Supabase
+    vorschlag = {
+      slot_1: new Date(Date.now()+7*86400000).toISOString(),
+      slot_2: new Date(Date.now()+8*86400000).toISOString(),
+      status: 'offen', anfrage_id: 1
+    };
+    anfrage = { fahrzeug:'Mercedes-Benz 500 SL (Cab, 80-89) · 245 PS', baujahr:1988 };
+    showAuswahl();
+  }
+}
+
+function showAuswahl(){
+  const s1 = fmt(vorschlag.slot_1);
+  const s2 = fmt(vorschlag.slot_2);
+  document.getElementById('container').innerHTML = `
+    <div class="eyebrow">Terminbestätigung</div>
+    <h1>Wählen Sie Ihren <em>Wunschtermin</em></h1>
+    <p class="sub">Wir haben zwei Termine für Sie reserviert. Bitte wählen Sie den passenden Termin — nach Ihrer Bestätigung erhalten Sie eine Zusammenfassung.</p>
+
+    ${anfrage ? `
+    <div class="fahrzeug-box">
+      <div class="fz-label">Ihr Fahrzeug</div>
+      <div class="fz-name">${anfrage.fahrzeug||'—'}</div>
+      ${anfrage.baujahr?`<div class="fz-detail">Baujahr ${anfrage.baujahr}</div>`:''}
+    </div>` : ''}
+
+    <div class="slot-title">Ihre Terminoptionen</div>
+    <div class="slot-cards">
+      <div class="slot-card" onclick="selectSlot(this,'1')" id="card-1">
+        <div class="slot-radio"></div>
+        <div class="slot-info">
+          <div class="slot-datum">${s1.datum}</div>
+          <div class="slot-uhrzeit">${s1.uhrzeit}</div>
+        </div>
+      </div>
+      <div class="slot-card" onclick="selectSlot(this,'2')" id="card-2">
+        <div class="slot-radio"></div>
+        <div class="slot-info">
+          <div class="slot-datum">${s2.datum}</div>
+          <div class="slot-uhrzeit">${s2.uhrzeit}</div>
+        </div>
+      </div>
+    </div>
+
+    <button class="btn btn-primary" id="btn-confirm" onclick="confirm()" disabled>
+      Termin verbindlich bestätigen →
+    </button>
+  `;
+}
+
+function selectSlot(el, nr){
+  document.querySelectorAll('.slot-card').forEach(c=>c.classList.remove('selected'));
+  el.classList.add('selected');
+  selectedSlot = nr==='1' ? vorschlag.slot_1 : vorschlag.slot_2;
+  document.getElementById('btn-confirm').disabled = false;
+}
+
+async function confirm(){
+  if(!selectedSlot) return;
+  document.getElementById('btn-confirm').disabled = true;
+  document.getElementById('btn-confirm').textContent = 'Wird gespeichert…';
+
+  try {
+    await fetch(`${SUPA_URL}/rest/v1/eiswerk_terminvorschlaege?id=eq.${vorschlag.id}`,{
+      method:'PATCH', headers:HEADERS,
+      body:JSON.stringify({status:'bestaetigt', bestaetigt_slot:selectedSlot, bestaetigt_am:new Date().toISOString()})
+    });
+    await fetch(`${SUPA_URL}/rest/v1/eiswerk_anfragen?id=eq.${vorschlag.anfrage_id}`,{
+      method:'PATCH', headers:HEADERS,
+      body:JSON.stringify({status:'fix', termin_datum:selectedSlot})
+    });
+  } catch(e){ console.warn(e); }
+
+  showBestaetigt(selectedSlot);
+}
+
+function showBestaetigt(slot){
+  const f = fmt(slot);
+  document.getElementById('container').innerHTML = `
+    <div class="success-box">
+      <div class="success-icon">✅</div>
+      <div class="success-title">Termin bestätigt!</div>
+      <div class="success-termin">${f.datum}<br>${f.uhrzeit}</div>
+      <div class="success-text">
+        Vielen Dank für Ihre Bestätigung.<br>
+        Wir freuen uns auf Ihren Besuch beim<br>
+        <strong>Oldtimer Eiswerk Baden-Württemberg</strong>.<br><br>
+        Bei Fragen oder Änderungswünschen melden Sie sich gerne per WhatsApp.
+        <br><br>
+        <em>Eisstrahlen. Sauber. Fertig.</em>
+      </div>
+    </div>
+  `;
+}
+
+function showError(msg){
+  document.getElementById('container').innerHTML = `
+    <div class="error-box">
+      <div style="font-size:32px;margin-bottom:12px">⚠️</div>
+      <strong>${msg}</strong>
+    </div>
+  `;
+}
+
+load();
+</script>
+</body>
+</html>
