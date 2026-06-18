@@ -391,7 +391,7 @@ function updateField(idx, field, val){
 }
 
 // In DB importieren
-async async function importData(){
+async function importData(){
   if(!parsedData) return;
   const exists = db.find(b => b.baureihe === parsedData.baureihe);
   if(exists){
