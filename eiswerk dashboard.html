@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Eiswerk Dashboard</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Raleway:wght@300;400;600;700&family=Playfair+Display:ital,wght@0,600;1,400&family=JetBrains+Mono:wght@400;600&display=swap');
+
+:root {
+  --black:  #0d0d0d;
+  --panel:  #111;
+  --card:   #161616;
+  --border: #222;
+  --border2:#2e2e2e;
+  --blue:   #1a6b8a;
+  --blue2:  #155a75;
+  --ice:    #a8d8ea;
+  --ice2:   #7bbfd4;
+  --white:  #f0f0f0;
+  --muted:  #555;
+  --muted2: #888;
+  --green:  #27ae60;
+  --red:    #c0392b;
+  --yellow: #f39c12;
+}
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--black);color:var(--white);font-family:'Raleway',sans-serif;min-height:100vh;}
+
+/* ── HEADER ── */
+header{
+  border-bottom:1px solid var(--border);
+  padding:18px 28px;
+  display:flex;align-items:center;justify-content:space-between;
+  background:var(--panel);
+  position:sticky;top:0;z-index:50;
+}
+.logo{display:flex;align-items:center;gap:12px;}
+.logo-mark{
+  width:42px;height:42px;background:var(--blue);
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Playfair Display',serif;font-size:17px;color:#fff;font-weight:600;
+}
+.logo-name{font-family:'Playfair Display',serif;font-size:19px;}
+.logo-sub{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted2);}
+.header-claim{font-size:11px;letter-spacing:.15em;text-transform:uppercase;color:var(--blue);}
+
+/* ── HERO ── */
+.hero{padding:36px 28px 28px;max-width:960px;margin:0 auto;}
+.hero-eyebrow{font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--blue);margin-bottom:10px;display:flex;align-items:center;gap:8px;}
+.hero-eyebrow::before{content:'';display:inline-block;width:24px;height:2px;background:var(--blue);}
+.hero h1{font-family:'Playfair Display',serif;font-size:clamp(22px,3vw,32px);margin-bottom:8px;}
+.hero h1 em{font-style:italic;color:var(--ice);}
+.hero-sub{font-size:13px;color:var(--muted2);line-height:1.7;}
+
+/* ── STATS ROW ── */
+.stats-row{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));
+  gap:10px;max-width:960px;margin:0 auto 28px;padding:0 28px;
+}
+.stat{background:var(--card);border:1px solid var(--border);border-radius:5px;padding:14px 16px;}
+.stat-val{font-family:'JetBrains Mono',monospace;font-size:26px;font-weight:600;margin-bottom:3px;}
+.stat-lbl{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted2);}
+.stat.blue  .stat-val{color:var(--ice2);}
+.stat.green .stat-val{color:#2ecc71;}
+.stat.yellow .stat-val{color:var(--yellow);}
+
+/* ── SECTIONS ── */
+.section{max-width:960px;margin:0 auto 32px;padding:0 28px;}
+.section-label{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-bottom:14px;display:flex;align-items:center;gap:10px;}
+.section-label::after{content:'';flex:1;height:1px;background:var(--border);}
+
+/* ── TOOL CARDS ── */
+.tools-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px;}
+.tool-card{
+  background:var(--card);border:1px solid var(--border);border-radius:6px;
+  padding:20px;cursor:pointer;text-decoration:none;
+  transition:border-color .2s,background .2s;
+  display:flex;flex-direction:column;gap:12px;
+  position:relative;overflow:hidden;
+}
+.tool-card:hover{border-color:var(--blue);background:#1a1a1a;}
+.tool-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  background:var(--blue);opacity:0;transition:opacity .2s;
+}
+.tool-card:hover::before{opacity:1;}
+.tool-icon{font-size:26px;}
+.tool-name{font-size:15px;font-weight:700;margin-bottom:2px;}
+.tool-desc{font-size:12px;color:var(--muted2);line-height:1.55;}
+.tool-url{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);margin-top:4px;}
+.tool-badge{
+  display:inline-flex;align-items:center;gap:5px;
+  font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+  padding:3px 8px;border-radius:2px;width:fit-content;
+}
+.badge-live  {background:rgba(39,174,96,.15);color:#2ecc71;}
+.badge-soon  {background:rgba(243,156,18,.1);color:var(--yellow);}
+.badge-ext   {background:rgba(26,107,138,.15);color:var(--ice2);}
+
+/* ── DB SEKTION ── */
+.db-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px;}
+.db-card{
+  background:var(--card);border:1px solid var(--border);border-radius:5px;
+  padding:14px 16px;display:flex;align-items:flex-start;gap:12px;
+}
+.db-card.loaded{border-left:3px solid var(--green);}
+.db-card.missing{border-left:3px solid var(--border2);opacity:.6;}
+.db-icon{font-size:18px;flex-shrink:0;margin-top:1px;}
+.db-name{font-size:13px;font-weight:600;margin-bottom:2px;}
+.db-count{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted2);}
+.db-stop{
+  margin-left:auto;flex-shrink:0;
+  font-size:16px;cursor:default;
+  title:"Bereits geladen";
+}
+
+.empty-db{
+  background:var(--card);border:1px solid var(--border);border-radius:6px;
+  padding:28px;text-align:center;color:var(--muted2);font-size:13px;
+  grid-column:1/-1;
+}
+.empty-db a{color:var(--ice2);text-decoration:none;}
+.empty-db a:hover{text-decoration:underline;}
+
+/* ── QUICK ACTIONS ── */
+.actions-row{display:flex;gap:10px;flex-wrap:wrap;}
+.btn{
+  display:inline-flex;align-items:center;gap:7px;
+  padding:10px 18px;font-family:'Raleway',sans-serif;
+  font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;
+  border:none;border-radius:3px;cursor:pointer;transition:background .15s;
+  text-decoration:none;
+}
+.btn-primary{background:var(--blue);color:#fff;}
+.btn-primary:hover{background:var(--blue2);}
+.btn-ghost{background:transparent;color:var(--muted2);border:1px solid var(--border2);}
+.btn-ghost:hover{border-color:var(--blue);color:var(--ice2);}
+
+/* ── BAUREIHEN die fehlen ── */
+.missing-grid{display:flex;gap:8px;flex-wrap:wrap;}
+.missing-chip{
+  font-size:11px;padding:5px 12px;border-radius:2px;
+  border:1px dashed var(--border2);color:var(--muted);
+  display:flex;align-items:center;gap:5px;
+}
+.missing-chip::before{content:'＋';color:var(--muted);}
+
+footer{border-top:1px solid var(--border);padding:16px 28px;text-align:center;font-size:11px;color:#333;margin-top:20px;}
+footer a{color:#444;text-decoration:none;}
+
+@media(max-width:600px){
+  .stats-row{grid-template-columns:repeat(2,1fr);}
+  .hero,section,.section{padding-left:16px;padding-right:16px;}
+  header{padding:14px 16px;}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <div class="logo-mark">OE</div>
+    <div>
+      <div class="logo-name">Oldtimer Eiswerk</div>
+      <div class="logo-sub">Dashboard · Baden-Württemberg</div>
+    </div>
+  </div>
+  <div class="header-claim">Eisstrahlen. Sauber. Fertig.</div>
+</header>
+
+<div class="hero">
+  <div class="hero-eyebrow">Schaltzentrale</div>
+  <h1>Alle Werkzeuge auf <em>einen Blick</em></h1>
+  <p class="hero-sub">Eisstrahl-Check, Terminverwaltung, Wertdatenbank — alles an einem Ort.</p>
+</div>
+
+<!-- STATS -->
+<div class="stats-row" id="stats-row">
+  <div class="stat blue"><div class="stat-val" id="s-baureihen">—</div><div class="stat-lbl">Baureihen in DB</div></div>
+  <div class="stat green"><div class="stat-val" id="s-modelle">—</div><div class="stat-lbl">Modelle gesamt</div></div>
+  <div class="stat yellow"><div class="stat-val" id="s-anfragen">—</div><div class="stat-lbl">Offene Anfragen</div></div>
+  <div class="stat blue"><div class="stat-val" id="s-termine">—</div><div class="stat-lbl">Termine diese Woche</div></div>
+</div>
+
+<!-- TOOLS -->
+<div class="section">
+  <div class="section-label">Kundentools</div>
+  <div class="tools-grid">
+    <a class="tool-card" href="https://uri2503.github.io/oldtimer-eiswerk/" target="_blank">
+      <div class="tool-icon">🧊</div>
+      <div>
+        <div class="tool-name">Eisstrahl-Check</div>
+        <div class="tool-desc">Kostenlose Kostenschätzung für Kunden — mit KI-Bildanalyse, Wertanalyse und WhatsApp-CTA.</div>
+        <div class="tool-url">oldtimer-eiswerk.de</div>
+      </div>
+      <div class="tool-badge badge-live">✓ Live</div>
+    </a>
+    <a class="tool-card" href="https://uri2503.github.io/oldtimer-eiswerk/eiswerk_termin.html" target="_blank">
+      <div class="tool-icon">📅</div>
+      <div>
+        <div class="tool-name">Terminbestätigung</div>
+        <div class="tool-desc">Kunden-Seite für die Terminwahl — wird per WhatsApp-Link zugeschickt nach Terminvorschlag.</div>
+        <div class="tool-url">eiswerk_termin.html</div>
+      </div>
+      <div class="tool-badge badge-live">✓ Live</div>
+    </a>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-label">Verwaltung</div>
+  <div class="tools-grid">
+    <a class="tool-card" href="https://uri2503.github.io/oldtimer-eiswerk/eiswerk_admin.html" target="_blank">
+      <div class="tool-icon">⚙️</div>
+      <div>
+        <div class="tool-name">Admin Panel</div>
+        <div class="tool-desc">Anfragen verwalten, Terminvorschläge generieren, Kalender und Erinnerungen.</div>
+        <div class="tool-url">eiswerk_admin.html</div>
+      </div>
+      <div class="tool-badge badge-live">✓ Live</div>
+    </a>
+    <a class="tool-card" href="https://uri2503.github.io/oldtimer-eiswerk/wertetabelle_importer.html" target="_blank">
+      <div class="tool-icon">📊</div>
+      <div>
+        <div class="tool-name">Wertetabelle Importer</div>
+        <div class="tool-desc">Oldtimer-Markt-Seiten fotografieren → KI erkennt alle Werte → 1 Klick in die Datenbank.</div>
+        <div class="tool-url">wertetabelle_importer.html</div>
+      </div>
+      <div class="tool-badge badge-live">✓ Live</div>
+    </a>
+  </div>
+</div>
+
+<!-- WERTDATENBANK STATUS -->
+<div class="section">
+  <div class="section-label">Wertdatenbank — geladene Baureihen</div>
+  <div class="db-grid" id="db-loaded-grid">
+    <div class="empty-db">Datenbank wird geladen…</div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-label">Noch nicht importiert — empfohlen</div>
+  <div class="missing-grid" id="missing-grid"></div>
+  <div class="actions-row" style="margin-top:14px;">
+    <a class="btn btn-primary" href="https://uri2503.github.io/oldtimer-eiswerk/wertetabelle_importer.html" target="_blank">
+      📸 Jetzt importieren
+    </a>
+    <button class="btn btn-ghost" onclick="refreshDB()">↻ DB aktualisieren</button>
+  </div>
+</div>
+
+<footer>
+  © 2026 Oldtimer Eiswerk Baden-Württemberg ·
+  <a href="https://uri2503.github.io/rc-dashboard" target="_blank">RC Dashboard</a>
+</footer>
+
+<script>
+const SUPA_URL  = 'https://ysqzdqazcgyuzdorauiq.supabase.co';
+const SUPA_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlzcXpkcWF6Y2d5dXpkb3JhdWlxIiwicm9sZSI6ImFub24iLCJpYXQiOjE2OTY3NTI0MjksImV4cCI6MjAxMjMyODQyOX0.RpNpOmNqLXr6YmjDYa8nM6HRJrGQmqmvJZLxfGNhQHc';
+const HEADERS   = {'apikey':SUPA_ANON,'Authorization':`Bearer ${SUPA_ANON}`};
+
+// Alle relevanten Baureihen die in die DB sollten
+const ALLE_BAUREIHEN = [
+  'R107 / C107 (SL/SLC)',
+  'S124 (E-Klasse T-Modell)',
+  'W123 (Limousine)',
+  'W124 (E-Klasse Limousine)',
+  'CLK A209/C209',
+  'W126 (S-Klasse)',
+  'W116 (S-Klasse)',
+  'W201 (190er)',
+  'W202 (C-Klasse)',
+  'W108/W109 (S-Klasse)',
+  'W111/W112 (Coupé/Cabrio)',
+  'Porsche 911 G-Modell',
+  'Porsche 911 964/993',
+  'Porsche 928/944/968',
+  'BMW E30 (3er)',
+  'BMW E28/E34 (5er)',
+  'VW Golf I/II',
+  'VW Käfer',
+];
+
+function loadDB(){
+  try { return JSON.parse(localStorage.getItem('wertetabelle_db') || '[]'); }
+  catch(e){ return []; }
+}
+
+async function loadAnfragen(){
+  try {
+    const r = await fetch(`${SUPA_URL}/rest/v1/eiswerk_anfragen?select=status&limit=200`, {headers:HEADERS});
+    return await r.json();
+  } catch(e){ return []; }
+}
+
+async function refreshDB(){
+  const db = loadDB();
+  const anfragen = await loadAnfragen();
+
+  // Stats
+  const offen = anfragen.filter(a=>!a.status||a.status==='neu').length;
+  const dieseWoche = anfragen.filter(a=>a.status==='fix').length;
+  document.getElementById('s-baureihen').textContent = db.length;
+  document.getElementById('s-modelle').textContent   = db.reduce((s,b)=>s+(b.modelle?.length||0),0);
+  document.getElementById('s-anfragen').textContent  = offen;
+  document.getElementById('s-termine').textContent   = dieseWoche;
+
+  // Geladene Baureihen
+  const grid = document.getElementById('db-loaded-grid');
+  if(!db.length){
+    grid.innerHTML = `<div class="empty-db">
+      Noch keine Baureihen importiert. <br>
+      <a href="https://uri2503.github.io/oldtimer-eiswerk/wertetabelle_importer.html" target="_blank">
+        → Jetzt erste Baureihe importieren
+      </a>
+    </div>`;
+  } else {
+    grid.innerHTML = db.map(b=>`
+      <div class="db-card loaded">
+        <div class="db-icon">✅</div>
+        <div>
+          <div class="db-name">${b.baureihe}</div>
+          <div class="db-count">${b.modelle?.length||0} Modelle · ${b.marke}</div>
+        </div>
+        <div class="db-stop" title="Bereits geladen">🛑</div>
+      </div>`).join('');
+  }
+
+  // Fehlende Baureihen
+  const geladene = db.map(b=>b.baureihe);
+  const fehlend  = ALLE_BAUREIHEN.filter(b=>!geladene.some(g=>g.toLowerCase().includes(b.toLowerCase().slice(0,8))));
+  const missingEl = document.getElementById('missing-grid');
+  missingEl.innerHTML = fehlend.length
+    ? fehlend.map(b=>`<div class="missing-chip">${b}</div>`).join('')
+    : `<div style="font-size:13px;color:#2ecc71;">✅ Alle empfohlenen Baureihen sind importiert!</div>`;
+}
+
+refreshDB();
+</script>
+</body>
+</html>
