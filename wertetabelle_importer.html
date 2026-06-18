@@ -282,7 +282,9 @@ Antworte NUR mit validem JSON, kein Text davor oder danach:
       "n3": Note3 Wert in Euro als Zahl,
       "trend": Trend in Prozent als Zahl (negativ möglich),
       "n4": Note4 Wert in Euro als Zahl,
-      "n5": Note5 Wert in Euro als Zahl
+      "n5": Note5 Wert in Euro als Zahl,
+      "neupreis": Neupreis als Zahl in der original Währung (DM oder €), null wenn nicht vorhanden,
+      "neupreis_waehrung": "DM" oder "EUR"
     }
   ]
 }`;
@@ -347,6 +349,7 @@ function renderResult(data){
       <td class="td-trend ${trendClass(m.trend)}" contenteditable="true" oninput="updateField(${i},'trend',this.textContent)">${m.trend}%</td>
       <td contenteditable="true" oninput="updateField(${i},'n4',this.textContent)">${fmt(m.n4)}</td>
       <td class="td-n5" contenteditable="true" oninput="updateField(${i},'n5',this.textContent)">${fmt(m.n5)}</td>
+      <td style="color:#aaa" contenteditable="true" oninput="updateField(${i},'neupreis',this.textContent)">${m.neupreis ? fmt(m.neupreis)+(m.neupreis_waehrung==='DM' ? ' DM' : ' €') : '—'}</td>
     </tr>`).join('');
 
   document.getElementById('result-area').innerHTML = `
@@ -363,7 +366,7 @@ function renderResult(data){
             <tr>
               <th>Modell</th><th>Kar.</th><th>Bauzeit</th><th>PS</th>
               <th>Note 1</th><th>Note 2</th><th>Note 3</th><th>Trend</th>
-              <th>Note 4</th><th>Note 5</th>
+              <th>Note 4</th><th>Note 5</th><th>Neupreis</th>
             </tr>
           </thead>
           <tbody>${rows}</tbody>
@@ -381,7 +384,7 @@ function renderResult(data){
 // Wert editieren
 function updateField(idx, field, val){
   if(!parsedData?.modelle[idx]) return;
-  const num = ['n1','n2','n3','n4','n5','ps','zyl','trend'];
+  const num = ['n1','n2','n3','n4','n5','ps','zyl','trend','neupreis'];
   if(num.includes(field)){
     const cleaned = val.replace(/[^\d\-\.]/g,'');
     parsedData.modelle[idx][field] = cleaned ? parseFloat(cleaned) : 0;
