@@ -237,7 +237,7 @@ footer a{color:#444;text-decoration:none;}
 <div class="section">
   <div class="section-label">Wertdatenbank — geladene Baureihen</div>
   <div class="db-grid" id="db-loaded-grid">
-    <div class="empty-db">Datenbank wird geladen…</div>
+    <div class="empty-db">Noch keine Daten — bitte ↻ DB Aktualisieren tippen.</div>
   </div>
 </div>
 
@@ -284,9 +284,13 @@ const ALLE_BAUREIHEN = [
   'VW Käfer',
 ];
 
-function loadDB(){
-  try { return JSON.parse(localStorage.getItem('wertetabelle_db') || '[]'); }
-  catch(e){ return []; }
+async function loadDB(){
+  try {
+    const r = await fetch(`${SUPA_URL}/rest/v1/eiswerk_wertetabelle?select=marke,baureihe,modelle&order=baureihe`,
+      {headers:{'apikey':SUPA_ANON,'Authorization':`Bearer ${SUPA_ANON}`}});
+    const data = await r.json();
+    return Array.isArray(data) ? data : [];
+  } catch(e){ return []; }
 }
 
 async function loadAnfragen(){
@@ -297,7 +301,7 @@ async function loadAnfragen(){
 }
 
 async function refreshDB(){
-  const db = loadDB();
+  const db = await loadDB();
   const anfragen = await loadAnfragen();
 
   // Stats
@@ -312,10 +316,9 @@ async function refreshDB(){
   const grid = document.getElementById('db-loaded-grid');
   if(!db.length){
     grid.innerHTML = `<div class="empty-db">
-      Noch keine Baureihen importiert. <br>
-      <a href="https://uri2503.github.io/oldtimer-eiswerk/wertetabelle_importer.html" target="_blank">
-        → Jetzt erste Baureihe importieren
-      </a>
+      Noch keine Baureihen importiert.<br>
+      Bitte zuerst im <a href="https://uri2503.github.io/oldtimer-eiswerk/wertetabelle_importer.html" target="_blank">Wertetabelle Importer</a> Baureihen laden —
+      dann hier auf <strong>↻ DB Aktualisieren</strong> tippen.
     </div>`;
   } else {
     grid.innerHTML = db.map(b=>`
@@ -338,7 +341,7 @@ async function refreshDB(){
     : `<div style="font-size:13px;color:#2ecc71;">✅ Alle empfohlenen Baureihen sind importiert!</div>`;
 }
 
-refreshDB();
+(async()=>{ await refreshDB(); })();
 </script>
 </body>
 </html>
