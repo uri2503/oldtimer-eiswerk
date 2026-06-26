@@ -3,143 +3,201 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Eiswerk Dashboard</title>
+<title>Eisstrahl-Check – Oldtimer Eiswerk</title>
+<meta name="description" content="Kostenlose Kostenschätzung für Trockeneisstrahlen Ihres Oldtimers. Oldtimer Eiswerk Baden-Württemberg — Eisstrahlen. Sauber. Fertig.">
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Raleway:wght@300;400;600;700&family=Playfair+Display:ital,wght@0,600;1,400&family=JetBrains+Mono:wght@400;600&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Raleway:wght@300;400;600;700&family=Playfair+Display:ital,wght@0,600;1,400&display=swap');
 
-:root {
-  --black:  #0d0d0d;
-  --panel:  #111;
-  --card:   #161616;
-  --border: #222;
-  --border2:#2e2e2e;
-  --blue:   #1a6b8a;
-  --blue2:  #155a75;
-  --ice:    #a8d8ea;
-  --ice2:   #7bbfd4;
-  --white:  #f0f0f0;
-  --muted:  #555;
-  --muted2: #888;
-  --green:  #27ae60;
-  --red:    #c0392b;
-  --yellow: #f39c12;
-}
+  :root {
+    --black:  #0d0d0d;
+    --blue:   #1a6b8a;
+    --blue2:  #155a75;
+    --blue3:  #0e7490;
+    --ice:    #a8d8ea;
+    --ice2:   #7bbfd4;
+    --white:  #f5f5f5;
+    --grey1:  #1a1a1a;
+    --grey2:  #2a2a2a;
+    --grey3:  #3d3d3d;
+    --muted:  #888;
+    --green:  #7ed896;
+  }
 
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-body{background:var(--black);color:var(--white);font-family:'Raleway',sans-serif;min-height:100vh;}
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--black); color: var(--white); font-family: 'Raleway', sans-serif; min-height: 100vh; }
 
-header{
-  border-bottom:1px solid var(--border);
-  padding:18px 28px;
-  display:flex;align-items:center;justify-content:space-between;
-  background:var(--panel);
-  position:sticky;top:0;z-index:50;
-}
-.logo{display:flex;align-items:center;gap:12px;}
-.logo-mark{
-  width:42px;height:42px;background:var(--blue);
-  display:flex;align-items:center;justify-content:center;
-  font-family:'Playfair Display',serif;font-size:17px;color:#fff;font-weight:600;
-}
-.logo-name{font-family:'Playfair Display',serif;font-size:19px;}
-.logo-sub{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted2);}
-.header-claim{font-size:11px;letter-spacing:.15em;text-transform:uppercase;color:var(--blue);}
+  /* HEADER */
+  header { border-bottom: 1px solid var(--grey2); padding: 16px 24px; display: flex; align-items: center; justify-content: space-between; }
+  .logo { display: flex; align-items: center; gap: 12px; }
+  .logo-mark { width: 40px; height: 40px; background: var(--blue); display: flex; align-items: center; justify-content: center; font-family: 'Playfair Display', serif; font-size: 16px; color: #fff; font-weight: 600; }
+  .logo-sub  { font-size: 11px; letter-spacing: .2em; text-transform: uppercase; color: var(--muted); }
+  .logo-name { font-family: 'Playfair Display', serif; font-size: 18px; }
+  .header-claim { font-size: 11px; letter-spacing: .15em; text-transform: uppercase; color: var(--blue3); display: none; }
+  @media(min-width:500px){ .header-claim { display: block; } }
 
-.hero{padding:36px 28px 28px;max-width:960px;margin:0 auto;}
-.hero-eyebrow{font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--blue);margin-bottom:10px;display:flex;align-items:center;gap:8px;}
-.hero-eyebrow::before{content:'';display:inline-block;width:24px;height:2px;background:var(--blue);}
-.hero h1{font-family:'Playfair Display',serif;font-size:clamp(22px,3vw,32px);margin-bottom:8px;}
-.hero h1 em{font-style:italic;color:var(--ice);}
-.hero-sub{font-size:13px;color:var(--muted2);line-height:1.7;}
+  /* HERO */
+  .hero { padding: 48px 24px 28px; max-width: 680px; margin: 0 auto; }
+  .hero-eyebrow { font-size: 11px; letter-spacing: .22em; text-transform: uppercase; color: var(--blue3); margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+  .hero-eyebrow::before { content:''; display:inline-block; width:28px; height:2px; background:var(--blue); }
+  .hero h1 { font-family: 'Playfair Display', serif; font-size: clamp(26px,5vw,40px); line-height: 1.2; margin-bottom: 14px; }
+  .hero h1 em { font-style: italic; color: var(--ice); }
+  .hero p { color: #aaa; font-size: 15px; line-height: 1.7; margin-bottom: 18px; }
+  .claim-badges { display: flex; gap: 8px; flex-wrap: wrap; }
+  .badge { font-size: 11px; letter-spacing: .1em; text-transform: uppercase; border: 1px solid var(--grey3); border-radius: 2px; padding: 6px 10px; color: var(--muted); }
+  .badge.active { border-color: var(--blue); color: var(--ice2); }
 
-.stats-row{
-  display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));
-  gap:10px;max-width:960px;margin:0 auto 28px;padding:0 28px;
-}
-.stat{background:var(--card);border:1px solid var(--border);border-radius:5px;padding:14px 16px;}
-.stat-val{font-family:'JetBrains Mono',monospace;font-size:26px;font-weight:600;margin-bottom:3px;}
-.stat-lbl{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted2);}
-.stat.blue  .stat-val{color:var(--ice2);}
-.stat.green .stat-val{color:#2ecc71;}
-.stat.yellow .stat-val{color:var(--yellow);}
+  /* STEPS NAV */
+  .steps-nav { display: flex; gap: 4px; max-width: 680px; margin: 24px auto 0; padding: 0 24px; }
+  .step-dot { flex: 1; height: 3px; background: var(--grey3); transition: background .3s; border-radius: 2px; }
+  .step-dot.active { background: var(--blue); }
+  .step-dot.done   { background: var(--ice2); }
 
-.section{max-width:960px;margin:0 auto 32px;padding:0 28px;}
-.section-label{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-bottom:14px;display:flex;align-items:center;gap:10px;}
-.section-label::after{content:'';flex:1;height:1px;background:var(--border);}
+  /* CARD */
+  .card { max-width: 680px; margin: 22px auto 60px; padding: 0 24px; }
+  .step { display: none; }
+  .step.active { display: block; }
+  .step-label { font-size: 11px; letter-spacing: .2em; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; }
+  .step-title { font-family: 'Playfair Display', serif; font-size: 22px; margin-bottom: 22px; border-left: 3px solid var(--blue); padding-left: 14px; }
 
-.tools-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px;}
-.tool-card{
-  background:var(--card);border:1px solid var(--border);border-radius:6px;
-  padding:20px;cursor:pointer;text-decoration:none;
-  transition:border-color .2s,background .2s;
-  display:flex;flex-direction:column;gap:12px;
-  position:relative;overflow:hidden;
-}
-.tool-card:hover{border-color:var(--blue);background:#1a1a1a;}
-.tool-card::before{
-  content:'';position:absolute;top:0;left:0;right:0;height:2px;
-  background:var(--blue);opacity:0;transition:opacity .2s;
-}
-.tool-card:hover::before{opacity:1;}
-.tool-icon{font-size:26px;}
-.tool-name{font-size:15px;font-weight:700;margin-bottom:2px;}
-.tool-desc{font-size:12px;color:var(--muted2);line-height:1.55;}
-.tool-url{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);margin-top:4px;}
-.tool-badge{
-  display:inline-flex;align-items:center;gap:5px;
-  font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
-  padding:3px 8px;border-radius:2px;width:fit-content;
-}
-.badge-live{background:rgba(39,174,96,.15);color:#2ecc71;}
-.badge-soon{background:rgba(243,156,18,.1);color:var(--yellow);}
+  /* FIELDS */
+  .field { margin-bottom: 16px; }
+  .field label { display: block; font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin-bottom: 7px; }
+  .field select, .field input { width: 100%; background: var(--grey1); border: 1px solid var(--grey3); color: var(--white); font-family: 'Raleway', sans-serif; font-size: 15px; padding: 12px 14px; border-radius: 3px; appearance: none; outline: none; transition: border-color .2s; }
+  .field select:focus, .field input:focus { border-color: var(--blue); }
+  .field select option { background: var(--grey1); }
 
-.db-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px;}
-.db-card{
-  background:var(--card);border:1px solid var(--border);border-radius:5px;
-  padding:14px 16px;display:flex;align-items:flex-start;gap:12px;
-}
-.db-card.loaded{border-left:3px solid var(--green);}
-.db-icon{font-size:18px;flex-shrink:0;margin-top:1px;}
-.db-name{font-size:13px;font-weight:600;margin-bottom:2px;}
-.db-count{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted2);}
+  /* ZUSTAND / NOTE KARTEN */
+  .zustand-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+  .zustand-card { background: var(--grey1); border: 1px solid var(--grey3); border-radius: 5px; padding: 14px 12px; cursor: pointer; transition: border-color .2s, background .2s; }
+  .zustand-card:hover { border-color: var(--muted); }
+  .zustand-card.selected { border-color: var(--blue); background: #091820; }
+  .zustand-card .zc-icon  { font-size: 20px; margin-bottom: 6px; }
+  .zustand-card .zc-title { font-size: 13px; font-weight: 700; margin-bottom: 3px; }
+  .zustand-card .zc-desc  { font-size: 11px; color: var(--muted); line-height: 1.45; }
 
-.empty-db{
-  background:var(--card);border:1px solid var(--border);border-radius:6px;
-  padding:28px;text-align:center;color:var(--muted2);font-size:13px;
-  grid-column:1/-1;
-}
-.empty-db a{color:var(--ice2);text-decoration:none;}
-.empty-db a:hover{text-decoration:underline;}
+  /* NOTE-KARTEN (5 Stück nebeneinander auf Desktop) */
+  .note-grid { display: grid; grid-template-columns: repeat(5,1fr); gap: 8px; margin-bottom: 10px; }
+  .note-card { background: var(--grey1); border: 1px solid var(--grey3); border-radius: 5px; padding: 12px 8px; cursor: pointer; text-align: center; transition: border-color .2s, background .2s; }
+  .note-card:hover { border-color: var(--muted); }
+  .note-card.selected { border-color: var(--blue); background: #091820; }
+  .note-card .nc-note  { font-family: 'Playfair Display', serif; font-size: 22px; color: var(--ice2); margin-bottom: 4px; }
+  .note-card .nc-label { font-size: 10px; color: var(--muted); line-height: 1.4; }
+  @media(max-width:480px){ .note-grid { grid-template-columns: repeat(3,1fr); } }
 
-.actions-row{display:flex;gap:10px;flex-wrap:wrap;}
-.btn{
-  display:inline-flex;align-items:center;gap:7px;
-  padding:10px 18px;font-family:'Raleway',sans-serif;
-  font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;
-  border:none;border-radius:3px;cursor:pointer;transition:background .15s;
-  text-decoration:none;
-}
-.btn-primary{background:var(--blue);color:#fff;}
-.btn-primary:hover{background:var(--blue2);}
-.btn-ghost{background:transparent;color:var(--muted2);border:1px solid var(--border2);}
-.btn-ghost:hover{border-color:var(--blue);color:var(--ice2);}
+  /* TOGGLE */
+  .toggle-row { display: flex; align-items: center; gap: 14px; background: var(--grey1); border: 1px solid var(--grey3); border-radius: 5px; padding: 14px 16px; margin-bottom: 18px; cursor: pointer; }
+  .toggle-row input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--blue); cursor: pointer; }
+  .toggle-row span { font-size: 14px; }
+  .toggle-row small { color: var(--muted); font-size: 12px; display: block; margin-top: 2px; }
 
-.missing-grid{display:flex;gap:8px;flex-wrap:wrap;}
-.missing-chip{
-  font-size:11px;padding:5px 12px;border-radius:2px;
-  border:1px dashed var(--border2);color:var(--muted);
-  display:flex;align-items:center;gap:5px;
-}
-.missing-chip::before{content:'＋';color:var(--muted);}
+  /* UPLOAD */
+  .upload-area { border: 2px dashed var(--grey3); border-radius: 6px; padding: 28px 20px; text-align: center; cursor: pointer; transition: border-color .2s; margin-bottom: 12px; }
+  .upload-area:hover { border-color: var(--blue); }
+  .upload-area input { display: none; }
+  .upload-icon { font-size: 32px; margin-bottom: 8px; }
+  .upload-text { font-size: 13px; color: var(--muted); }
+  .upload-text strong { color: var(--ice2); }
+  .photo-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; margin-bottom: 12px; }
+  .photo-thumb { aspect-ratio:1; border-radius:4px; overflow:hidden; position:relative; background:var(--grey2); }
+  .photo-thumb img { width:100%; height:100%; object-fit:cover; }
+  .photo-thumb .remove { position:absolute; top:4px; right:4px; background:rgba(0,0,0,.75); border:none; color:#fff; border-radius:50%; width:22px; height:22px; font-size:11px; cursor:pointer; display:flex; align-items:center; justify-content:center; }
 
-footer{border-top:1px solid var(--border);padding:16px 28px;text-align:center;font-size:11px;color:#333;margin-top:20px;}
-footer a{color:#444;text-decoration:none;}
+  /* AI STATUS */
+  .ai-status { background: var(--grey1); border: 1px solid var(--grey3); border-radius: 5px; padding: 14px 16px; margin-bottom: 14px; font-size: 13px; color: var(--muted); min-height: 50px; display: flex; align-items: center; gap: 10px; }
+  .ai-status.loading { color: var(--ice2); }
+  .ai-status.done    { color: var(--green); border-color: #2a4a2a; }
+  .ai-status.warn    { color: #f0c040; border-color: #4a3a10; }
+  .spinner { width:18px; height:18px; border:2px solid var(--grey3); border-top-color:var(--blue); border-radius:50%; animation:spin .8s linear infinite; flex-shrink:0; }
+  @keyframes spin { to { transform:rotate(360deg); } }
 
-@media(max-width:600px){
-  .stats-row{grid-template-columns:repeat(2,1fr);}
-  .hero,.section{padding-left:16px;padding-right:16px;}
-  header{padding:14px 16px;}
-}
+  /* BUTTONS */
+  .btn { display:inline-flex; align-items:center; gap:8px; padding:13px 24px; font-family:'Raleway',sans-serif; font-size:12px; font-weight:700; letter-spacing:.14em; text-transform:uppercase; border:none; border-radius:3px; cursor:pointer; transition:background .2s,transform .1s; }
+  .btn:active { transform:scale(.98); }
+  .btn-primary   { background:var(--blue);  color:#fff; }
+  .btn-primary:hover { background:var(--blue2); }
+  .btn-secondary { background:var(--grey2); color:var(--white); }
+  .btn-secondary:hover { background:var(--grey3); }
+  .btn:disabled  { opacity:.4; cursor:not-allowed; }
+  .btn-row { display:flex; gap:10px; flex-wrap:wrap; margin-top:10px; }
+
+  /* ERGEBNIS */
+  .result-hero { background:var(--grey1); border:1px solid var(--grey2); border-radius:6px; padding:24px; margin-bottom:16px; }
+  .result-label { font-size:10px; letter-spacing:.18em; text-transform:uppercase; color:var(--muted); margin-bottom:5px; }
+  .result-fahrzeug { font-family:'Playfair Display',serif; font-size:19px; margin-bottom:18px; }
+  .cost-row { display:flex; justify-content:space-between; align-items:center; padding:11px 0; border-bottom:1px solid var(--grey2); }
+  .cost-row:last-child { border-bottom:none; }
+  .cost-row .cr-label { font-size:13px; color:#ccc; }
+  .cost-row .cr-val   { font-size:14px; font-weight:700; }
+  .cost-row.total .cr-label { font-size:14px; color:var(--white); font-weight:600; }
+  .cost-row.total .cr-val   { font-size:17px; color:var(--ice2); }
+
+  /* WERT */
+  .wert-section { margin-bottom:16px; }
+  .wert-title { font-size:11px; letter-spacing:.15em; text-transform:uppercase; color:var(--muted); margin-bottom:14px; }
+  /* SÄULEN-CHART */
+  .saeulen-chart { display:flex; gap:16px; align-items:flex-end; margin-bottom:20px; height:190px; }
+  .saeule-wrap { flex:1; display:flex; flex-direction:column; align-items:center; height:100%; justify-content:flex-end; }
+  .saeule-euro { font-size:13px; font-weight:700; text-align:center; margin-bottom:6px; line-height:1.3; }
+  .saeule-bar { width:100%; border-radius:4px 4px 0 0; transition:height 1.3s cubic-bezier(.4,0,.2,1); min-height:4px; }
+  .saeule-bar.inv  { background:linear-gradient(180deg,#e74c3c 0%,#c0392b 100%); }
+  .saeule-bar.wert { background:linear-gradient(180deg,#a8d8ea 0%,#1a6b8a 100%); }
+  .saeule-label { font-size:10px; color:var(--muted); text-align:center; letter-spacing:.06em; text-transform:uppercase; margin-top:8px; }
+  .saeule-note  { font-size:10px; color:#555; text-align:center; margin-top:2px; }
+  .saeulen-faktor { text-align:center; font-size:12px; color:var(--muted); margin-bottom:16px; }
+  .saeulen-faktor strong { color:var(--ice2); font-size:16px; }
+
+  .wert-fazit { background:#091820; border:1px solid #1a3a4a; border-radius:5px; padding:16px; font-size:13px; line-height:1.65; color:#a8d0e0; }
+  .wert-fazit strong { color:var(--ice2); }
+
+  .wert-hinweis { background:#1a1600; border:1px solid #3a3000; border-radius:5px; padding:14px 16px; font-size:12px; color:#c8b060; line-height:1.6; margin-top:12px; }
+
+  .disclaimer { font-size:11px; color:var(--muted); line-height:1.65; border-top:1px solid var(--grey2); padding-top:14px; margin-top:4px; }
+
+  /* CTA */
+  .cta-section { background:linear-gradient(135deg,#081420 0%,#0d0d0d 100%); border:1px solid var(--blue); border-radius:6px; padding:24px 22px; margin-top:18px; }
+  .cta-section h3 { font-family:'Playfair Display',serif; font-size:20px; margin-bottom:8px; }
+  .cta-section p  { font-size:13px; color:#aaa; margin-bottom:16px; line-height:1.65; }
+  .cta-facts { display:flex; gap:14px; flex-wrap:wrap; margin-bottom:18px; }
+  .cta-fact  { display:flex; align-items:center; gap:7px; font-size:12px; color:#bbb; }
+  .cta-fact span { color:var(--blue3); font-size:15px; }
+  .wa-btn { display:inline-flex; align-items:center; gap:10px; background:#25d366; color:#000; font-family:'Raleway',sans-serif; font-size:12px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; padding:13px 22px; border-radius:3px; text-decoration:none; transition:background .2s; }
+  .wa-btn:hover { background:#1eb857; }
+  .ai-note { margin-top:10px; font-size:11px; color:var(--muted); }
+
+  /* LADEBALKEN */
+  .progress-wrap { margin-bottom:14px; }
+  .progress-label { display:flex; justify-content:space-between; font-size:12px; color:var(--muted); margin-bottom:6px; }
+  .progress-label span:last-child { color:var(--ice2); font-weight:700; }
+  .progress-track { height:4px; background:var(--grey2); border-radius:2px; overflow:hidden; }
+  .progress-fill { height:100%; background:linear-gradient(90deg,var(--blue) 0%,var(--ice2) 100%); border-radius:2px; transition:width .3s ease; width:0%; }
+  .progress-fill.pulse { animation:pulse-bar 1.2s ease-in-out infinite; }
+  @keyframes pulse-bar {
+    0%,100% { opacity:1; }
+    50%      { opacity:.5; }
+  }
+  .upload-status { font-size:12px; color:var(--muted); margin-top:6px; min-height:18px; }
+  .ai-progress-wrap { background:var(--grey1); border:1px solid var(--grey3); border-radius:5px; padding:16px; margin-bottom:14px; }
+  .ai-progress-label { font-size:13px; color:var(--ice2); margin-bottom:10px; display:flex; align-items:center; gap:8px; }
+  .ai-progress-steps { display:flex; flex-direction:column; gap:6px; margin-top:10px; }
+  .ai-step { font-size:11px; color:var(--muted); display:flex; align-items:center; gap:8px; }
+  .ai-step.active { color:var(--white); }
+  .ai-step.done   { color:var(--green); }
+  .ai-step-dot { width:8px; height:8px; border-radius:50%; background:var(--grey3); flex-shrink:0; }
+  .ai-step.active .ai-step-dot { background:var(--ice2); animation:dot-pulse .8s ease-in-out infinite; }
+  .ai-step.done   .ai-step-dot { background:var(--green); }
+  @keyframes dot-pulse { 0%,100%{transform:scale(1);} 50%{transform:scale(1.4);} }
+
+  footer { border-top:1px solid var(--grey2); padding:20px 24px; text-align:center; font-size:11px; color:#555; letter-spacing:.08em; }
+  footer a { color:#666; text-decoration:none; }
+  footer a:hover { color:var(--muted); }
+
+  @media(max-width:480px){
+    .zustand-grid { grid-template-columns:1fr; }
+    .photo-grid   { grid-template-columns:repeat(2,1fr); }
+    .btn-row      { flex-direction:column; }
+    .btn          { justify-content:center; }
+    .cta-facts    { flex-direction:column; gap:10px; }
+  }
 </style>
 </head>
 <body>
@@ -149,175 +207,786 @@ footer a{color:#444;text-decoration:none;}
     <div class="logo-mark">OE</div>
     <div>
       <div class="logo-name">Oldtimer Eiswerk</div>
-      <div class="logo-sub">Dashboard · Baden-Württemberg</div>
+      <div class="logo-sub">Baden-Württemberg</div>
     </div>
   </div>
   <div class="header-claim">Eisstrahlen. Sauber. Fertig.</div>
 </header>
 
 <div class="hero">
-  <div class="hero-eyebrow">Schaltzentrale</div>
-  <h1>Alle Werkzeuge auf <em>einen Blick</em></h1>
-  <p class="hero-sub">Eisstrahl-Check, Terminverwaltung, Wertdatenbank — alles an einem Ort.</p>
-</div>
-
-<div class="stats-row" id="stats-row">
-  <div class="stat blue"><div class="stat-val" id="s-baureihen">—</div><div class="stat-lbl">Baureihen in DB</div></div>
-  <div class="stat green"><div class="stat-val" id="s-modelle">—</div><div class="stat-lbl">Modelle gesamt</div></div>
-  <div class="stat yellow"><div class="stat-val" id="s-anfragen">—</div><div class="stat-lbl">Offene Anfragen</div></div>
-  <div class="stat blue"><div class="stat-val" id="s-termine">—</div><div class="stat-lbl">Termine diese Woche</div></div>
-</div>
-
-<div class="section">
-  <div class="section-label">Kundentools</div>
-  <div class="tools-grid">
-    <a class="tool-card" href="https://uri2503.github.io/oldtimer-eiswerk/" target="_blank">
-      <div class="tool-icon">🧊</div>
-      <div>
-        <div class="tool-name">Eisstrahl-Check</div>
-        <div class="tool-desc">Kostenlose Kostenschätzung für Kunden — mit KI-Bildanalyse, Wertanalyse und WhatsApp-CTA.</div>
-        <div class="tool-url">oldtimer-eiswerk.de</div>
-      </div>
-      <div class="tool-badge badge-live">✓ Live</div>
-    </a>
-    <a class="tool-card" href="https://uri2503.github.io/oldtimer-eiswerk/eiswerk_termin.html" target="_blank">
-      <div class="tool-icon">📅</div>
-      <div>
-        <div class="tool-name">Terminbestätigung</div>
-        <div class="tool-desc">Kunden-Seite für die Terminwahl — wird per WhatsApp-Link zugeschickt nach Terminvorschlag.</div>
-        <div class="tool-url">eiswerk_termin.html</div>
-      </div>
-      <div class="tool-badge badge-live">✓ Live</div>
-    </a>
+  <div class="hero-eyebrow">Kostenloser Eisstrahl-Check</div>
+  <h1>Was kostet das Eisstrahlen<br>Ihres <em>Klassikers?</em></h1>
+  <p>In 5 Minuten zur unverbindlichen Kostenschätzung —
+     mit Einschätzung des Werteffekts auf Ihr Fahrzeug.
+     Kein Anruf, keine Verpflichtung.</p>
+  <div class="claim-badges">
+    <div class="badge active">✓ Kostenlos</div>
+    <div class="badge active">✓ Unverbindlich</div>
+    <div class="badge">Fr/Sa Termine verfügbar</div>
+    <div class="badge">Begutachtung auf der Hebebühne</div>
   </div>
 </div>
 
-<div class="section">
-  <div class="section-label">Verwaltung</div>
-  <div class="tools-grid">
-    <a class="tool-card" href="https://uri2503.github.io/oldtimer-eiswerk/eiswerk_admin.html" target="_blank">
-      <div class="tool-icon">⚙️</div>
-      <div>
-        <div class="tool-name">Admin Panel</div>
-        <div class="tool-desc">Anfragen verwalten, Terminvorschläge generieren, Kalender und Erinnerungen.</div>
-        <div class="tool-url">eiswerk_admin.html</div>
-      </div>
-      <div class="tool-badge badge-live">✓ Live</div>
-    </a>
-    <a class="tool-card" href="https://uri2503.github.io/oldtimer-eiswerk/wertetabelle_importer.html" target="_blank">
-      <div class="tool-icon">📊</div>
-      <div>
-        <div class="tool-name">Wertetabelle Importer</div>
-        <div class="tool-desc">Oldtimer-Markt-Seiten fotografieren → KI erkennt alle Werte → 1 Klick in die Datenbank.</div>
-        <div class="tool-url">wertetabelle_importer.html</div>
-      </div>
-      <div class="tool-badge badge-live">✓ Live</div>
-    </a>
-  </div>
+<div class="steps-nav">
+  <div class="step-dot active" id="dot-1"></div>
+  <div class="step-dot" id="dot-2"></div>
+  <div class="step-dot" id="dot-3"></div>
+  <div class="step-dot" id="dot-4"></div>
+  <div class="step-dot" id="dot-5"></div>
+  <div class="step-dot" id="dot-6"></div>
 </div>
 
-<div class="section">
-  <div class="section-label">Wertdatenbank — geladene Baureihen</div>
-  <div class="db-grid" id="db-loaded-grid">
-    <div class="empty-db">Wird geladen…</div>
-  </div>
-</div>
+<div class="card">
 
-<div class="section">
-  <div class="section-label">Noch nicht importiert — empfohlen</div>
-  <div class="missing-grid" id="missing-grid"></div>
-  <div class="actions-row" style="margin-top:14px;">
-    <a class="btn btn-primary" href="https://uri2503.github.io/oldtimer-eiswerk/wertetabelle_importer.html" target="_blank">
-      📸 Jetzt importieren
-    </a>
-    <button class="btn btn-ghost" onclick="refreshDB()">↻ DB aktualisieren</button>
+  <!-- ══ SCHRITT 1: FAHRZEUG ══ -->
+  <div class="step active" id="step-1">
+    <div class="step-label">Schritt 1 von 6</div>
+    <div class="step-title">Ihr Fahrzeug</div>
+
+    <div class="field">
+      <label>Marke</label>
+      <select id="sel-marke" onchange="onMarkeChange()">
+        <option value="">— bitte wählen —</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>Baureihe</label>
+      <select id="sel-baureihe" disabled onchange="onBaureiheChange()">
+        <option value="">— bitte zuerst Marke wählen —</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>Modell / Motorisierung</label>
+      <select id="sel-modell" disabled onchange="onModellChange()">
+        <option value="">— bitte zuerst Baureihe wählen —</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>Baujahr (optional)</label>
+      <input type="number" id="inp-baujahr" min="1950" max="2005" placeholder="z.B. 1987">
+    </div>
+    <div class="field">
+      <label>Fahrzeug nicht in der Liste? Freitext</label>
+      <input type="text" id="inp-freitext" placeholder="z.B. Opel Kadett C, 1978" oninput="onFreitextChange()">
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-primary" id="btn-1" onclick="goStep(2)" disabled>Weiter →</button>
+    </div>
   </div>
+
+  <!-- ══ SCHRITT 2: FAHRZEUGZUSTAND (NEU) ══ -->
+  <div class="step" id="step-2">
+    <div class="step-label">Schritt 2 von 6</div>
+    <div class="step-title">Aktueller Fahrzeugzustand</div>
+
+    <p style="color:#aaa;font-size:13px;line-height:1.65;margin-bottom:20px;">
+      Wie würden Sie den Gesamtzustand Ihres Fahrzeugs einschätzen?
+      Bitte wählen Sie die Note, die am besten passt —
+      aus einem Gutachten oder Ihrer eigenen Einschätzung.
+    </p>
+
+    <div class="note-grid">
+      <div class="note-card" onclick="selectNote(this,1)">
+        <div class="nc-note">1</div>
+        <div class="nc-label">Konzours<br>neuwertig</div>
+      </div>
+      <div class="note-card" onclick="selectNote(this,2)">
+        <div class="nc-note">2</div>
+        <div class="nc-label">Sehr gut<br>gepflegt</div>
+      </div>
+      <div class="note-card" onclick="selectNote(this,3)">
+        <div class="nc-note">3</div>
+        <div class="nc-label">Gut<br>gebrauchsfähig</div>
+      </div>
+      <div class="note-card" onclick="selectNote(this,4)">
+        <div class="nc-note">4</div>
+        <div class="nc-label">Mängel<br>vorhanden</div>
+      </div>
+      <div class="note-card" onclick="selectNote(this,5)">
+        <div class="nc-note">5</div>
+        <div class="nc-label">Restaurierungs-<br>bedürftig</div>
+      </div>
+    </div>
+
+    <p style="font-size:11px;color:var(--muted);margin-top:8px;margin-bottom:20px;">
+      Hinweis: Diese Einschätzung bezieht sich auf das Gesamtfahrzeug, nicht nur den Unterboden.
+    </p>
+
+    <div class="btn-row">
+      <button class="btn btn-secondary" onclick="goStep(1)">← Zurück</button>
+      <button class="btn btn-primary" id="btn-2" onclick="goStep(3)" disabled>Weiter →</button>
+    </div>
+  </div>
+
+  <!-- ══ SCHRITT 3: UNTERBODEN-ZUSTAND ══ -->
+  <div class="step" id="step-3">
+    <div class="step-label">Schritt 3 von 6</div>
+    <div class="step-title">Zustand des Unterbodens</div>
+
+    <div class="zustand-grid">
+      <div class="zustand-card" onclick="selectZustand(this,'original')">
+        <div class="zc-icon">✨</div>
+        <div class="zc-title">Original / unberührt</div>
+        <div class="zc-desc">Weitgehend im Originalzustand, keine nachträglichen Behandlungen erkennbar</div>
+      </div>
+      <div class="zustand-card" onclick="selectZustand(this,'teilbehandelt')">
+        <div class="zc-icon">🔧</div>
+        <div class="zc-title">Teilweise behandelt</div>
+        <div class="zc-desc">Frühere Werkstatt hat bereits Unterbodenschutz oder Dichtmasse aufgebracht</div>
+      </div>
+      <div class="zustand-card" onclick="selectZustand(this,'stark')">
+        <div class="zc-icon">⚠️</div>
+        <div class="zc-title">Stark beschichtet</div>
+        <div class="zc-desc">Mehrere Schichten Bitumen oder Dichtmasse — sichtbar dicker Auftrag</div>
+      </div>
+      <div class="zustand-card" onclick="selectZustand(this,'unbekannt')">
+        <div class="zc-icon">❓</div>
+        <div class="zc-title">Weiß ich nicht</div>
+        <div class="zc-desc">Kein Überblick — KI-Analyse aus Fotos hilft bei der Einschätzung</div>
+      </div>
+    </div>
+
+    <div class="toggle-row" onclick="toggleVersiegelung()">
+      <input type="checkbox" id="chk-versiegelung">
+      <div>
+        <span>Hohlraumversiegelung im Anschluss</span>
+        <small>Auf sauberem Unterboden — der sinnvolle nächste Schritt nach dem Strahlen</small>
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-secondary" onclick="goStep(2)">← Zurück</button>
+      <button class="btn btn-primary" id="btn-3" onclick="goStep(4)" disabled>Weiter →</button>
+    </div>
+  </div>
+
+  <!-- ══ SCHRITT 4: FOTOS ══ -->
+  <div class="step" id="step-4">
+    <div class="step-label">Schritt 4 von 6</div>
+    <div class="step-title">Fotos Ihres Fahrzeugs</div>
+
+    <div class="upload-area" onclick="document.getElementById('file-input').click()">
+      <input type="file" id="file-input" accept="image/*" multiple onchange="handleFiles(this.files)">
+      <div class="upload-icon">📷</div>
+      <div class="upload-text">
+        <strong>Fotos auswählen</strong><br>
+        2–3 Außenaufnahmen, optional Unterboden<br>
+        <span style="font-size:11px;color:#555">JPG, PNG · max. 5 MB je Bild</span>
+      </div>
+    </div>
+
+    <div class="photo-grid" id="photo-grid"></div>
+
+    <div id="upload-progress-wrap" style="display:none;">
+      <div class="progress-wrap">
+        <div class="progress-label"><span id="upload-progress-text">Wird hochgeladen…</span><span id="upload-progress-pct">0%</span></div>
+        <div class="progress-track"><div class="progress-fill" id="upload-progress-fill"></div></div>
+      </div>
+    </div>
+    <div class="ai-status" id="ai-status">
+      <span>💡</span>
+      <span>Fotos helfen uns, den Zustand besser einzuschätzen — auch ohne Unterboden-Aufnahme.</span>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-secondary" onclick="goStep(3)">← Zurück</button>
+      <button class="btn btn-primary" onclick="runAI(); goStep(5)">Analyse starten →</button>
+    </div>
+  </div>
+
+  <!-- ══ SCHRITT 5: KI-ANALYSE ══ -->
+  <div class="step" id="step-5">
+    <div class="step-label">Schritt 5 von 6</div>
+    <div class="step-title">KI-Analyse</div>
+
+    <div class="ai-progress-wrap" id="ai-running">
+      <div class="ai-progress-label">
+        <div class="spinner"></div>
+        <span id="ai-msg">Bilder werden vorbereitet…</span>
+      </div>
+      <div class="progress-wrap">
+        <div class="progress-track"><div class="progress-fill pulse" id="ai-progress-fill" style="width:0%"></div></div>
+      </div>
+      <div class="ai-progress-steps" id="ai-steps">
+        <div class="ai-step" id="ai-step-1"><div class="ai-step-dot"></div>Bilder komprimieren</div>
+        <div class="ai-step" id="ai-step-2"><div class="ai-step-dot"></div>Unterboden analysieren</div>
+        <div class="ai-step" id="ai-step-3"><div class="ai-step-dot"></div>Zustandseinschätzung erstellen</div>
+        <div class="ai-step" id="ai-step-4"><div class="ai-step-dot"></div>Ergebnis aufbereiten</div>
+      </div>
+    </div>
+
+    <div id="ai-result-block" style="display:none;">
+      <div class="ai-status done" id="ai-result-status">
+        <span>✅</span>
+        <span id="ai-result-text"></span>
+      </div>
+    </div>
+
+    <div class="btn-row" style="margin-top:20px;">
+      <button class="btn btn-secondary" onclick="goStep(4)">← Zurück</button>
+      <button class="btn btn-primary" id="btn-5" onclick="goStep(6)" disabled>Ergebnis anzeigen →</button>
+    </div>
+  </div>
+
+  <!-- ══ SCHRITT 6: ERGEBNIS ══ -->
+  <div class="step" id="step-6">
+    <div class="step-label">Ihre Schätzung</div>
+    <div class="step-title">Ergebnis & Wertanalyse</div>
+
+    <div class="result-hero">
+      <div class="result-label">Fahrzeug</div>
+      <div class="result-fahrzeug" id="res-fahrzeug">—</div>
+      <div id="res-costs"></div>
+    </div>
+
+    <div class="wert-section" id="wert-section" style="display:none;">
+      <div class="wert-title">Investition vs. Marktpotenzial</div>
+      <div id="wert-bars"></div>
+      <div class="wert-fazit" id="wert-fazit"></div>
+      <div class="wert-hinweis" id="wert-hinweis"></div>
+    </div>
+
+    <div class="disclaimer">
+      Diese Schätzung basiert auf Ihren Angaben und einer KI-Bildanalyse.
+      Der verbindliche Preis wird bei der <strong>kostenlosen Hebebühnen-Begutachtung</strong> festgelegt.
+      Abweichungen sind möglich, wenn nachträgliche Beschichtungen erst beim Strahlen sichtbar werden.
+    </div>
+
+    <div class="cta-section">
+      <h3>Termin vereinbaren</h3>
+      <div class="cta-facts">
+        <div class="cta-fact"><span>🔵</span> Begutachtung kostenlos & unverbindlich</div>
+        <div class="cta-fact"><span>🔵</span> Termine freitags & samstags</div>
+        <div class="cta-fact"><span>🔵</span> Eisstrahlen. Sauber. Fertig.</div>
+      </div>
+      <a id="wa-link" href="#" class="wa-btn" target="_blank">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+        WhatsApp Termin anfragen
+      </a>
+      <div class="ai-note">Ihre Fahrzeugdaten werden automatisch in die Nachricht übernommen.</div>
+    </div>
+
+    <div class="btn-row" style="margin-top:18px;">
+      <button class="btn btn-secondary" onclick="goStep(1); resetAll()">← Neue Anfrage</button>
+    </div>
+  </div>
+
 </div>
 
 <footer>
-  © 2026 Oldtimer Eiswerk Baden-Württemberg ·
-  <a href="https://uri2503.github.io/rc-dashboard" target="_blank">RC Dashboard</a>
+  <p>© 2026 Oldtimer Eiswerk Baden-Württemberg ·
+     <a href="mailto:info@oldtimer-eiswerk.de">info@oldtimer-eiswerk.de</a> ·
+     <a href="#">Impressum</a> · <a href="#">Datenschutz</a>
+  </p>
 </footer>
 
 <script>
-var SUPA_URL  = 'https://ysqzdqazcgyuzdorauiq.supabase.co';
-var SUPA_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlzcXpkcWF6Y2d5dXpkb3JhdWlxIiwicm9sZSI6ImFub24iLCJpYXQiOjE2OTY3NTI0MjksImV4cCI6MjAxMjMyODQyOX0.RpNpOmNqLXr6YmjDYa8nM6HRJrGQmqmvJZLxfGNhQHc';
-var HEADERS   = {'apikey':SUPA_ANON,'Authorization':'Bearer '+SUPA_ANON};
+// ══════════════════════════════════════════════
+// CONFIG — Supabase Proxy URL (wie alle anderen RC-Tools)
+// ══════════════════════════════════════════════
+const PROXY_URL   = 'https://ysqzdqazcgyuzdorauiq.supabase.co/functions/v1/claude-proxy';
+const SUPA_URL    = 'https://ysqzdqazcgyuzdorauiq.supabase.co';
+const SUPA_ANON   = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlzcXpkcWF6Y2d5dXpkb3JhdWlxIiwicm9sZSI6ImFub24iLCJpYXQiOjE2OTY3NTI0MjksImV4cCI6MjAxMjMyODQyOX0.RpNpOmNqLXr6YmjDYa8nM6HRJrGQmqmvJZLxfGNhQHc';
 
-var ALLE_BAUREIHEN = [
-  'R107 / C107 (SL/SLC)',
-  'S124 (E-Klasse T-Modell)',
-  'W123 (Limousine)',
-  'W124 (E-Klasse Limousine)',
-  'CLK A209/C209',
-  'W126 (S-Klasse)',
-  'W116 (S-Klasse)',
-  'W201 (190er)',
-  'W202 (C-Klasse)',
-  'W108/W109 (S-Klasse)',
-  'W111/W112 (Coupé/Cabrio)',
-  'Porsche 911 G-Modell',
-  'Porsche 911 964/993',
-  'Porsche 928/944/968',
-  'BMW E30 (3er)',
-  'BMW E28/E34 (5er)',
-  'VW Golf I/II',
-  'VW Käfer'
+// ══════════════════════════════════════════════
+// DATENBANK
+// ══════════════════════════════════════════════
+const DB = [
+  {
+    marke:"Mercedes-Benz", baureihe:"R107 / C107 (SL/SLC)",
+    modelle:[
+      {m:"280SL",         k:"Cab",bz:"74-85",ps:185, n1:46300,n2:29800,n3:17200,n4:8800, n5:4000},
+      {m:"280 SLC",       k:"Cpé",bz:"74-81",ps:185, n1:35500,n2:21200,n3:12100,n4:6200, n5:3000},
+      {m:"300SL",         k:"Cab",bz:"85-89",ps:188, n1:64200,n2:41300,n3:23900,n4:12200,n5:5500},
+      {m:"350 SL",        k:"Cab",bz:"71-80",ps:200, n1:42200,n2:27100,n3:15800,n4:8000, n5:3600},
+      {m:"350 SLC",       k:"Cpé",bz:"71-80",ps:200, n1:33800,n2:20100,n3:11500,n4:5900, n5:2900},
+      {m:"380SL",         k:"Cab",bz:"80-85",ps:218, n1:48500,n2:31300,n3:17900,n4:9100, n5:4100},
+      {m:"380 SLC",       k:"Cpé",bz:"80-81",ps:218, n1:45600,n2:26200,n3:15000,n4:7700, n5:3800},
+      {m:"420 SL",        k:"Cab",bz:"85-89",ps:218, n1:61100,n2:39300,n3:22600,n4:11500,n5:5200},
+      {m:"450 SL",        k:"Cab",bz:"71-80",ps:225, n1:46900,n2:30200,n3:17400,n4:8800, n5:4000},
+      {m:"450 SLC",       k:"Cpé",bz:"72-80",ps:225, n1:40500,n2:23700,n3:13300,n4:6800, n5:3300},
+      {m:"450 SLC 5.0",   k:"Cpé",bz:"78-80",ps:240, n1:63500,n2:37200,n3:21700,n4:11200,n5:5400},
+      {m:"500 SLC",       k:"Cpé",bz:"80-81",ps:240, n1:67300,n2:39600,n3:22900,n4:11700,n5:5700},
+      {m:"500 SL",        k:"Cab",bz:"80-89",ps:245, n1:66900,n2:43000,n3:24700,n4:12600,n5:5700},
+      {m:"560 SL (USA)",  k:"Cab",bz:"86-89",ps:231, n1:55600,n2:35800,n3:20600,n4:10500,n5:4800},
+    ]
+  },
+  {
+    marke:"Mercedes-Benz", baureihe:"S124 (E-Klasse T-Modell)",
+    modelle:[
+      {m:"200T",               k:"Kom",bz:"85-89",ps:109, n1:22200,n2:12200,n3:6200, n4:3300,n5:1700},
+      {m:"200T",               k:"Kom",bz:"89-90",ps:105, n1:22200,n2:12200,n3:6200, n4:3300,n5:1700},
+      {m:"200 TE",             k:"Kom",bz:"88-89",ps:122, n1:21300,n2:11600,n3:6000, n4:3200,n5:1600},
+      {m:"200 TE",             k:"Kom",bz:"89-92",ps:118, n1:22300,n2:12200,n3:6300, n4:3300,n5:1700},
+      {m:"200 TE",             k:"Kom",bz:"92-93",ps:136, n1:22600,n2:12500,n3:6400, n4:3400,n5:1800},
+      {m:"E200T",              k:"Kom",bz:"93-96",ps:136, n1:21900,n2:11900,n3:6200, n4:3200,n5:1600},
+      {m:"200 TD",             k:"Kom",bz:"85-89",ps:72,  n1:23300,n2:12500,n3:6500, n4:3400,n5:1700},
+      {m:"200 TD",             k:"Kom",bz:"89-91",ps:75,  n1:24100,n2:13300,n3:6700, n4:3500,n5:1800},
+      {m:"220 TE",             k:"Kom",bz:"92-93",ps:150, n1:24900,n2:13600,n3:7100, n4:3600,n5:1900},
+      {m:"E220T",              k:"Kom",bz:"92-96",ps:150, n1:24100,n2:13200,n3:6800, n4:3500,n5:1800},
+      {m:"230 TE",             k:"Kom",bz:"85-89",ps:136, n1:23200,n2:12700,n3:6500, n4:3400,n5:1800},
+      {m:"230 TE",             k:"Kom",bz:"89-92",ps:132, n1:23700,n2:13000,n3:6600, n4:3500,n5:1800},
+      {m:"250 TD",             k:"Kom",bz:"85-89",ps:90,  n1:25700,n2:14100,n3:7100, n4:3700,n5:1800},
+      {m:"250 D",              k:"Kom",bz:"89-93",ps:94,  n1:26400,n2:14300,n3:7400, n4:3600,n5:1800},
+      {m:"E250 Diesel T",      k:"Kom",bz:"92-96",ps:113, n1:27400,n2:14900,n3:7700, n4:3800,n5:2000},
+      {m:"280 TE",             k:"Kom",bz:"92-93",ps:197, n1:31000,n2:16300,n3:8400, n4:4400,n5:2300},
+      {m:"E280T",              k:"Kom",bz:"93-96",ps:197, n1:29300,n2:16200,n3:8300, n4:4300,n5:2200},
+      {m:"300 TE",             k:"Kom",bz:"85-89",ps:188, n1:27000,n2:14800,n3:7600, n4:3800,n5:2100},
+      {m:"300 TE 4Matic",      k:"Kom",bz:"89-92",ps:180, n1:32000,n2:17000,n3:8700, n4:4400,n5:2300,matic:true},
+      {m:"300 TE-24",          k:"Kom",bz:"89-92",ps:220, n1:40200,n2:22000,n3:11200,n4:5900,n5:3000},
+      {m:"E300T 4Matic",       k:"Kom",bz:"93-95",ps:180, n1:31600,n2:16700,n3:8500, n4:4400,n5:2300,matic:true},
+      {m:"300 TD",             k:"Kom",bz:"86-89",ps:109, n1:26600,n2:14400,n3:7500, n4:3700,n5:1800},
+      {m:"300 TD",             k:"Kom",bz:"89-93",ps:113, n1:27900,n2:15500,n3:7900, n4:4000,n5:2100},
+      {m:"E300 Diesel T",      k:"Kom",bz:"92-96",ps:136, n1:27400,n2:14900,n3:7800, n4:3900,n5:2100},
+      {m:"300 TD Turbo 4Matic",k:"Kom",bz:"85-89",ps:143, n1:26200,n2:14300,n3:7400, n4:3700,n5:1800,matic:true},
+      {m:"300 TD Turbo 4Matic",k:"Kom",bz:"89-93",ps:147, n1:27400,n2:15100,n3:7700, n4:4000,n5:2100,matic:true},
+      {m:"E300 Turbodiesel T", k:"Kom",bz:"93-96",ps:147, n1:26700,n2:14600,n3:7600, n4:3800,n5:1900},
+      {m:"320 TE",             k:"Kom",bz:"92-93",ps:220, n1:38400,n2:21100,n3:10700,n4:5600,n5:2900},
+      {m:"E320T",              k:"Kom",bz:"92-96",ps:220, n1:38000,n2:20900,n3:10600,n4:5500,n5:2800},
+      {m:"E36 AMG T",          k:"Kom",bz:"93-96",ps:272, n1:115000,n2:63000,n3:32000,n4:17000,n5:8500,amg:true},
+    ]
+  }
 ];
 
-async function loadDB(){
-  try {
-    var r = await fetch(SUPA_URL+'/rest/v1/eiswerk_wertetabelle?select=marke,baureihe,modelle&order=baureihe',
-      {headers:{'apikey':SUPA_ANON,'Authorization':'Bearer '+SUPA_ANON}});
-    var data = await r.json();
-    return Array.isArray(data) ? data : [];
-  } catch(e){ return []; }
+// ══════════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════════
+let state = {
+  marke:'', baureihe:'', modellIdx:-1, freitext:'', baujahr:'',
+  fahrzeugNote: 0,   // NEU: Gesamtzustand Note 1-5
+  zustand:'', versiegelung:false,
+  photos:[], aiNote:'', aiZustandNote:0,
+  currentStep:1
+};
+
+// ══════════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════════
+(function init(){
+  const marken=[...new Set(DB.map(b=>b.marke))];
+  const sel=document.getElementById('sel-marke');
+  marken.forEach(m=>{ let o=document.createElement('option'); o.value=m; o.text=m; sel.appendChild(o); });
+})();
+
+// ══════════════════════════════════════════════
+// SCHRITT 1
+// ══════════════════════════════════════════════
+function checkStep1(){
+  const hasDB = state.modellIdx >= 0;
+  const hasFT = document.getElementById('inp-freitext').value.trim().length > 2;
+  document.getElementById('btn-1').disabled = !(hasDB || hasFT);
 }
-
-async function loadAnfragen(){
-  try {
-    var r = await fetch(SUPA_URL+'/rest/v1/eiswerk_anfragen?select=status&limit=200', {headers:HEADERS});
-    var data = await r.json();
-    return Array.isArray(data) ? data : [];
-  } catch(e){ return []; }
-}
-
-async function refreshDB(){
-  document.getElementById('db-loaded-grid').innerHTML = '<div class="empty-db">Wird geladen…</div>';
-  var db = await loadDB();
-  var anfragen = await loadAnfragen();
-
-  var offen = anfragen.filter(function(a){ return !a.status || a.status==='neu'; }).length;
-  var dieseWoche = anfragen.filter(function(a){ return a.status==='fix'; }).length;
-  var modelle = db.reduce(function(s,b){ return s+(b.modelle ? b.modelle.length : 0); }, 0);
-
-  document.getElementById('s-baureihen').textContent = db.length;
-  document.getElementById('s-modelle').textContent   = modelle;
-  document.getElementById('s-anfragen').textContent  = offen;
-  document.getElementById('s-termine').textContent   = dieseWoche;
-
-  var grid = document.getElementById('db-loaded-grid');
-  if(!db.length){
-    grid.innerHTML = '<div class="empty-db">Noch keine Baureihen importiert.<br><a href="https://uri2503.github.io/oldtimer-eiswerk/wertetabelle_importer.html" target="_blank">→ Jetzt erste Baureihe importieren</a></div>';
-  } else {
-    grid.innerHTML = db.map(function(b){
-      return '<div class="db-card loaded"><div class="db-icon">✅</div><div><div class="db-name">'+b.baureihe+'</div><div class="db-count">'+(b.modelle ? b.modelle.length : 0)+' Modelle · '+b.marke+'</div></div></div>';
-    }).join('');
-  }
-
-  var geladene = db.map(function(b){ return b.baureihe; });
-  var fehlend  = ALLE_BAUREIHEN.filter(function(b){
-    return !geladene.some(function(g){ return g.toLowerCase().indexOf(b.toLowerCase().slice(0,8)) !== -1; });
+function onMarkeChange(){
+  state.marke=document.getElementById('sel-marke').value;
+  state.modellIdx=-1;
+  const bSel=document.getElementById('sel-baureihe');
+  bSel.innerHTML='<option value="">— bitte wählen —</option>';
+  bSel.disabled=!state.marke;
+  document.getElementById('sel-modell').innerHTML='<option value="">— bitte zuerst Baureihe wählen —</option>';
+  document.getElementById('sel-modell').disabled=true;
+  checkStep1();
+  if(!state.marke) return;
+  DB.filter(b=>b.marke===state.marke).forEach(b=>{
+    let o=document.createElement('option'); o.value=b.baureihe; o.text=b.baureihe; bSel.appendChild(o);
   });
-  var missingEl = document.getElementById('missing-grid');
-  if(fehlend.length){
-    missingEl.innerHTML = fehlend.map(function(b){ return '<div class="missing-chip">'+b+'</div>'; }).join('');
-  } else {
-    missingEl.innerHTML = '<div style="font-size:13px;color:#2ecc71;">✅ Alle empfohlenen Baureihen sind importiert!</div>';
+}
+function onBaureiheChange(){
+  state.baureihe=document.getElementById('sel-baureihe').value;
+  state.modellIdx=-1;
+  const mSel=document.getElementById('sel-modell');
+  mSel.innerHTML='<option value="">— bitte wählen —</option>';
+  mSel.disabled=!state.baureihe;
+  checkStep1();
+  if(!state.baureihe) return;
+  const br=DB.find(b=>b.marke===state.marke&&b.baureihe===state.baureihe);
+  if(!br) return;
+  br.modelle.forEach((m,i)=>{
+    let o=document.createElement('option'); o.value=i;
+    o.text=`${m.m} (${m.bz}) · ${m.ps} PS${m.matic?' · 4Matic':''}${m.amg?' · AMG':''}`;
+    mSel.appendChild(o);
+  });
+}
+function onModellChange(){
+  state.modellIdx=parseInt(document.getElementById('sel-modell').value);
+  checkStep1();
+}
+function onFreitextChange(){
+  state.freitext=document.getElementById('inp-freitext').value.trim();
+  checkStep1();
+}
+
+// ══════════════════════════════════════════════
+// SCHRITT 2 — FAHRZEUGZUSTAND NOTE
+// ══════════════════════════════════════════════
+function selectNote(el, note){
+  document.querySelectorAll('.note-card').forEach(c=>c.classList.remove('selected'));
+  el.classList.add('selected');
+  state.fahrzeugNote = note;
+  document.getElementById('btn-2').disabled = false;
+}
+
+// ══════════════════════════════════════════════
+// SCHRITT 3 — UNTERBODEN
+// ══════════════════════════════════════════════
+function selectZustand(el, val){
+  document.querySelectorAll('.zustand-card').forEach(c=>c.classList.remove('selected'));
+  el.classList.add('selected');
+  state.zustand=val;
+  document.getElementById('btn-3').disabled=false;
+}
+function toggleVersiegelung(){
+  const cb=document.getElementById('chk-versiegelung');
+  cb.checked=!cb.checked;
+  state.versiegelung=cb.checked;
+}
+
+// ══════════════════════════════════════════════
+// SCHRITT 4 — FOTOS
+// ══════════════════════════════════════════════
+function handleFiles(files){
+  const grid=document.getElementById('photo-grid');
+  const toLoad=Array.from(files).slice(0,5-state.photos.length);
+  if(!toLoad.length) return;
+  let loaded=0;
+  const wrap=document.getElementById('upload-progress-wrap');
+  const fill=document.getElementById('upload-progress-fill');
+  const pct=document.getElementById('upload-progress-pct');
+  const txt=document.getElementById('upload-progress-text');
+  wrap.style.display='block';
+  document.getElementById('ai-status').style.display='none';
+  toLoad.forEach(file=>{
+    const reader=new FileReader();
+    reader.onprogress=e=>{
+      if(e.lengthComputable){
+        const p=Math.round(((loaded+e.loaded/e.total)/toLoad.length)*100);
+        fill.style.width=p+'%'; pct.textContent=p+'%';
+      }
+    };
+    reader.onload=e=>{
+      loaded++;
+      const p=Math.round((loaded/toLoad.length)*100);
+      fill.style.width=p+'%'; pct.textContent=p+'%';
+      txt.textContent=`${loaded} von ${toLoad.length} Foto(s) geladen`;
+      state.photos.push({name:file.name,dataUrl:e.target.result});
+      const div=document.createElement('div'); div.className='photo-thumb';
+      const idx=state.photos.length-1;
+      div.innerHTML=`<img src="${e.target.result}"><button class="remove" onclick="removePhoto(${idx})">✕</button>`;
+      grid.appendChild(div);
+      if(loaded===toLoad.length){
+        setTimeout(()=>{
+          wrap.style.display='none';
+          const statusEl=document.getElementById('ai-status');
+          statusEl.style.display='flex';
+          statusEl.innerHTML=`<span>✅</span><span>${state.photos.length} Foto(s) bereit für die KI-Analyse.</span>`;
+        },600);
+      }
+    };
+    reader.readAsDataURL(file);
+  });
+}
+function removePhoto(idx){
+  state.photos.splice(idx,1);
+  const grid=document.getElementById('photo-grid'); grid.innerHTML='';
+  state.photos.forEach((_,i)=>{
+    const div=document.createElement('div'); div.className='photo-thumb';
+    div.innerHTML=`<img src="${state.photos[i].dataUrl}"><button class="remove" onclick="removePhoto(${i})">✕</button>`;
+    grid.appendChild(div);
+  });
+}
+
+// ══════════════════════════════════════════════
+// SCHRITT 5 — KI-ANALYSE via Supabase Proxy
+// ══════════════════════════════════════════════
+async function runAI(){
+  const statusEl = document.getElementById('ai-running');
+  const resBlock  = document.getElementById('ai-result-block');
+  const resStatus = document.getElementById('ai-result-status');
+  const resText   = document.getElementById('ai-result-text');
+  const btn5      = document.getElementById('btn-5');
+
+  // Kein Foto → sofort weitermachen, Note aus Fahrzeugzustand übernehmen
+  if(state.photos.length===0){
+    state.aiNote='Keine Fotos hochgeladen — Kostenschätzung basiert auf Ihren manuellen Angaben.';
+    state.aiZustandNote = state.fahrzeugNote || zustandToNote(state.zustand);
+    statusEl.style.display='none';
+    resBlock.style.display='block';
+    resStatus.className='ai-status warn';
+    resStatus.innerHTML=`<span>ℹ️</span><span>${state.aiNote}</span>`;
+    btn5.disabled=false;
+    return;
+  }
+
+  statusEl.style.display='block';
+  resBlock.style.display='none';
+  btn5.disabled=true;
+
+  // Schritt-Animation
+  function setStep(n, state){
+    const el=document.getElementById(`ai-step-${n}`);
+    if(!el) return;
+    el.className='ai-step '+(state||'active');
+  }
+  function setProgress(p, msg){
+    document.getElementById('ai-progress-fill').style.width=p+'%';
+    document.getElementById('ai-msg').textContent=msg;
+  }
+  setStep(1,'active'); setProgress(10,'Bilder werden komprimiert…');
+
+  try {
+    const content=[];
+    // Bilder komprimieren vor API-Call
+    const compressedPhotos = await Promise.all(
+      state.photos.slice(0,3).map(p => compressImage(p.dataUrl, 1200, 0.75))
+    );
+    setStep(1,'done'); setStep(2,'active'); setProgress(35,'Unterboden wird analysiert…');
+    compressedPhotos.forEach(dataUrl=>{
+      const [header,b64]=dataUrl.split(',');
+      const mime=header.match(/:(.*?);/)[1];
+      content.push({type:'image',source:{type:'base64',media_type:mime,data:b64}});
+    });
+    content.push({type:'text',text:
+      `Du bist Experte für Oldtimer-Restauration und Trockeneisstrahlen.
+Analysiere die Fotos und beurteile kurz:
+1. Sichtbarer Zustand des Unterbodens (Rostgrad, Beschichtungsdicke, Altschichten — falls erkennbar)
+2. Allgemeiner Pflegezustand des Fahrzeugs
+3. Schätze eine Zustandsnote 1-5 für den Unterboden (1=neuwertig, 5=stark restaurierungsbedürftig)
+Antworte in 2-3 deutschen Sätzen, fachlich präzise, ohne Marketing-Sprache.
+Beginne mit: "Zustandseinschätzung: Note [1-5]."`});
+
+    // Proxy-Aufruf (wie RC_Schadenkalkulation etc.)
+    const resp = await fetch(PROXY_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-6',
+        max_tokens: 300,
+        messages: [{ role: 'user', content }]
+      })
+    });
+
+    if(!resp.ok) throw new Error(`HTTP ${resp.status}`);
+    setStep(2,'done'); setStep(3,'active'); setProgress(70,'Zustandseinschätzung wird erstellt…');
+    const data = await resp.json();
+    const text = data.content?.map(c=>c.text||'').join('') || 'Analyse nicht verfügbar.';
+    setStep(3,'done'); setStep(4,'active'); setProgress(90,'Ergebnis wird aufbereitet…');
+    await new Promise(r=>setTimeout(r,500)); // kurze Pause für UX
+    state.aiNote = text;
+    const nm = text.match(/Note\s*([1-5])/i);
+    state.aiZustandNote = nm ? parseInt(nm[1]) : (state.fahrzeugNote || zustandToNote(state.zustand));
+
+    setStep(4,'done'); setProgress(100,'Analyse abgeschlossen');
+    await new Promise(r=>setTimeout(r,400));
+    statusEl.style.display='none';
+    resBlock.style.display='block';
+    resStatus.className='ai-status done';
+    resStatus.innerHTML=`<span>✅</span><span>${text}</span>`;
+    btn5.disabled=false;
+
+  } catch(e){
+    state.aiNote='KI-Analyse konnte nicht durchgeführt werden — Schätzung basiert auf Ihren manuellen Angaben.';
+    state.aiZustandNote = state.fahrzeugNote || zustandToNote(state.zustand);
+    statusEl.style.display='none';
+    resBlock.style.display='block';
+    resStatus.className='ai-status warn';
+    resStatus.innerHTML=`<span>ℹ️</span><span>${state.aiNote}</span>`;
+    btn5.disabled=false;
   }
 }
 
-refreshDB();
+// Bildkomprimierung
+function compressImage(dataUrl, maxW, quality){
+  return new Promise(resolve=>{
+    const img=new Image();
+    img.onload=()=>{
+      const scale=Math.min(1, maxW/img.width);
+      const w=Math.round(img.width*scale);
+      const h=Math.round(img.height*scale);
+      const canvas=document.createElement('canvas');
+      canvas.width=w; canvas.height=h;
+      canvas.getContext('2d').drawImage(img,0,0,w,h);
+      resolve(canvas.toDataURL('image/jpeg', quality));
+    };
+    img.src=dataUrl;
+  });
+}
+
+// Anfrage in Supabase speichern
+async function saveAnfrage(fzName, kosten, potenzial){
+  try {
+    await fetch(`${SUPA_URL}/rest/v1/eiswerk_anfragen`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'apikey': SUPA_ANON,
+        'Authorization': `Bearer ${SUPA_ANON}`,
+        'Prefer': 'return=minimal'
+      },
+      body: JSON.stringify({
+        fahrzeug:       fzName,
+        marke:          state.marke || state.freitext,
+        baureihe:       state.baureihe,
+        baujahr:        document.getElementById('inp-baujahr').value || null,
+        fahrzeug_note:  state.fahrzeugNote || null,
+        unterboden:     state.zustand,
+        versiegelung:   state.versiegelung,
+        kosten_min:     kosten.min,
+        kosten_max:     kosten.max,
+        marktpotenzial: potenzial || null,
+        ai_analyse:     state.aiNote || null,
+        erstellt_am:    new Date().toISOString()
+      })
+    });
+  } catch(e){ console.warn('Supabase save failed:', e); }
+}
+
+function zustandToNote(z){
+  return {original:2, teilbehandelt:3, stark:4, unbekannt:3}[z] || 3;
+}
+
+// ══════════════════════════════════════════════
+// SCHRITT 6 — ERGEBNIS (defensivere Aussage)
+// ══════════════════════════════════════════════
+function buildResult(){
+  const br = DB.find(b=>b.marke===state.marke && b.baureihe===state.baureihe);
+  const mo = (br && state.modellIdx>=0) ? br.modelle[state.modellIdx] : null;
+
+  const fzName = mo
+    ? `${state.marke} ${mo.m} (${mo.k}, ${mo.bz}) · ${mo.ps} PS`
+    : (state.freitext || `${state.marke} ${state.baureihe}`.trim() || 'Ihr Fahrzeug');
+  document.getElementById('res-fahrzeug').textContent = fzName;
+
+  const strahlMin={original:1200,teilbehandelt:1500,stark:1900,unbekannt:1400}[state.zustand]||1400;
+  const strahlMax={original:1800,teilbehandelt:2200,stark:2800,unbekannt:2000}[state.zustand]||2000;
+  const versMin=state.versiegelung?300:0;
+  const versMax=state.versiegelung?500:0;
+  const fmt=n=>n.toLocaleString('de-DE')+' €';
+  const fmtR=(a,b)=>`${a.toLocaleString('de-DE')} – ${b.toLocaleString('de-DE')} €`;
+
+  document.getElementById('res-costs').innerHTML=`
+    <div class="cost-row">
+      <span class="cr-label">Trockeneisstrahlen (Unterboden)</span>
+      <span class="cr-val">${fmtR(strahlMin,strahlMax)}</span>
+    </div>
+    ${state.versiegelung?`
+    <div class="cost-row">
+      <span class="cr-label">Hohlraumversiegelung</span>
+      <span class="cr-val">${fmtR(versMin,versMax)}</span>
+    </div>`:''}
+    <div class="cost-row total">
+      <span class="cr-label">Geschätzte Gesamtinvestition</span>
+      <span class="cr-val">${fmtR(strahlMin+versMin,strahlMax+versMax)}</span>
+    </div>
+  `;
+
+  // Wertanalyse — basiert auf vom Nutzer eingegebener Note (Schritt 2)
+  const wertSection=document.getElementById('wert-section');
+  if(mo && state.fahrzeugNote > 0){
+    wertSection.style.display='block';
+    const keys=['n1','n2','n3','n4','n5'];
+    const cur = Math.min(5, Math.max(1, state.fahrzeugNote));
+    const nxt = Math.max(1, cur-1);
+    const wVor  = mo[keys[cur-1]];
+    const wNach = mo[keys[nxt-1]];
+    const stg   = wNach - wVor;
+    const invMax = strahlMax + versMax;
+    const maxBar = Math.max(invMax, stg, 1);
+    const faktor = stg > 0 ? (stg/invMax).toFixed(1) : '—';
+
+    const maxH = 150; // px Säulenhöhe max
+    const invH = Math.round(invMax/maxBar*maxH);
+    const stgH = Math.round(stg/maxBar*maxH);
+    document.getElementById('wert-bars').innerHTML=`
+      <div class="saeulen-chart">
+        <div class="saeule-wrap">
+          <div class="saeule-euro" style="color:#e74c3c">${fmt(invMax)}</div>
+          <div class="saeule-bar inv" style="height:${invH}px"></div>
+          <div class="saeule-label">Investition</div>
+          <div class="saeule-note">max. Aufwand</div>
+        </div>
+        <div class="saeule-wrap">
+          <div class="saeule-euro" style="color:var(--ice2)">${fmt(stg)}</div>
+          <div class="saeule-bar wert" style="height:${stgH}px"></div>
+          <div class="saeule-label">Marktpotenzial</div>
+          <div class="saeule-note">Note ${cur} → ${nxt}</div>
+        </div>
+      </div>
+      <div class="saeulen-faktor">Hebel: <strong>${faktor}x</strong> — das Potenzial übersteigt die Investition um das ${faktor}-fache</div>
+    `;
+
+    // DEFENSIVERE Formulierung
+    document.getElementById('wert-fazit').innerHTML =
+      `<strong>Ihr Fahrzeug hat Potenzial:</strong> Bei einer Verbesserung von Note ${cur} auf Note ${nxt} liegt das Marktpotenzial bei ca. <strong>${fmt(stg)}</strong> — einer Investition von bis zu ${fmt(invMax)} gegenüber (Faktor ${faktor}x).`;
+
+    document.getElementById('wert-hinweis').innerHTML =
+      `⚠️ <strong>Wichtiger Hinweis:</strong> Das Eisstrahlen allein führt nicht zu einer Verbesserung der Zustandsnote. Es schafft jedoch die saubere Basis, auf der eine konsequente Weiterrestaurierung (Versiegelung, Lackierung, Technik) dieses Potenzial erschließen kann. Wir beraten Sie gerne bei der Begutachtung über die nächsten sinnvollen Schritte.`;
+  } else {
+    wertSection.style.display='none';
+  }
+
+  // WhatsApp
+  const bj=document.getElementById('inp-baujahr').value;
+  const noteLabel=['','Konzours (1)','Sehr gut (2)','Gut (3)','Mängel vorhanden (4)','Restaurierungsbedürftig (5)'];
+  const msg=encodeURIComponent(
+    `Hallo Oldtimer Eiswerk,\n\n`+
+    `ich habe den Eisstrahl-Check genutzt und möchte einen Termin anfragen.\n\n`+
+    `Fahrzeug: ${fzName}${bj?', Bj. '+bj:''}\n`+
+    `Fahrzeugzustand: ${state.fahrzeugNote ? noteLabel[state.fahrzeugNote] : 'nicht angegeben'}\n`+
+    `Unterboden: ${state.zustand||'nicht angegeben'}\n`+
+    `Versiegelung gewünscht: ${state.versiegelung?'Ja':'Nein'}\n`+
+    `Kostenschätzung: ${fmtR(strahlMin+versMin,strahlMax+versMax)}\n\n`+
+    `Bitte um Rückruf oder Terminvorschlag. Vielen Dank!`
+  );
+  // Anfrage speichern
+  const kosten={min:strahlMin+versMin, max:strahlMax+versMax};
+  const potenzial = (mo && state.fahrzeugNote>0) ? (()=>{
+    const keys=['n1','n2','n3','n4','n5'];
+    const cur=Math.min(5,Math.max(1,state.fahrzeugNote));
+    const nxt=Math.max(1,cur-1);
+    return mo[keys[nxt-1]] - mo[keys[cur-1]];
+  })() : null;
+  saveAnfrage(fzName, kosten, potenzial);
+
+  document.getElementById('wa-link').href=`https://wa.me/491727409769?text=${msg}`;
+}
+
+// ══════════════════════════════════════════════
+// NAVIGATION — jetzt 6 Schritte
+// ══════════════════════════════════════════════
+function goStep(n){
+  document.getElementById(`step-${state.currentStep}`).classList.remove('active');
+  document.getElementById(`dot-${state.currentStep}`).classList.remove('active');
+  document.getElementById(`dot-${state.currentStep}`).classList.add('done');
+  if(n===6) buildResult();
+  state.currentStep=n;
+  document.getElementById(`step-${n}`).classList.add('active');
+  document.getElementById(`dot-${n}`).classList.remove('done');
+  document.getElementById(`dot-${n}`).classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function resetAll(){
+  state={marke:'',baureihe:'',modellIdx:-1,freitext:'',baujahr:'',
+    fahrzeugNote:0,zustand:'',versiegelung:false,
+    photos:[],aiNote:'',aiZustandNote:0,currentStep:1};
+  document.getElementById('sel-marke').value='';
+  document.getElementById('sel-baureihe').innerHTML='<option>— bitte zuerst Marke wählen —</option>';
+  document.getElementById('sel-baureihe').disabled=true;
+  document.getElementById('sel-modell').innerHTML='<option>— bitte zuerst Baureihe wählen —</option>';
+  document.getElementById('sel-modell').disabled=true;
+  document.getElementById('inp-baujahr').value='';
+  document.getElementById('inp-freitext').value='';
+  document.getElementById('btn-1').disabled=true;
+  document.querySelectorAll('.note-card').forEach(c=>c.classList.remove('selected'));
+  document.querySelectorAll('.zustand-card').forEach(c=>c.classList.remove('selected'));
+  document.getElementById('chk-versiegelung').checked=false;
+  document.getElementById('photo-grid').innerHTML='';
+  document.getElementById('ai-status').innerHTML=
+    '<span>💡</span><span>Fotos helfen uns, den Zustand besser einzuschätzen.</span>';
+  document.querySelectorAll('.step-dot').forEach((d,i)=>{
+    d.className='step-dot'+(i===0?' active':'');
+  });
+}
 </script>
 </body>
 </html>
