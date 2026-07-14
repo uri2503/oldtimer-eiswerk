@@ -259,7 +259,7 @@ footer a{color:#444;text-decoration:none;}
 
 <script>
 const SUPA_URL  = 'https://ysqzdqazcgyuzdorauiq.supabase.co';
-const SUPA_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlzcXpkcWF6Y2d5dXpkb3JhdWlxIiwicm9sZSI6ImFub24iLCJpYXQiOjE2OTY3NTI0MjksImV4cCI6MjAxMjMyODQyOX0.RpNpOmNqLXr6YmjDYa8nM6HRJrGQmqmvJZLxfGNhQHc';
+const SUPA_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlzcXpkcWF6Y2d5dXpkb3JhdWlxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk5ODM0NzcsImV4cCI6MjA5NTU1OTQ3N30.u5cbSVniUl5Zvlf2rdpnjtvDyKvv9csmPwvdtnEwWzE';
 const HEADERS   = {'apikey':SUPA_ANON,'Authorization':`Bearer ${SUPA_ANON}`};
 
 // Alle relevanten Baureihen die in die DB sollten
@@ -288,9 +288,10 @@ async function loadDB(){
   try {
     const r = await fetch(`${SUPA_URL}/rest/v1/eiswerk_wertetabelle?select=marke,baureihe,modelle&order=baureihe`,
       {headers:{'apikey':SUPA_ANON,'Authorization':`Bearer ${SUPA_ANON}`}});
+    if(!r.ok) throw new Error(`HTTP ${r.status}`);
     const data = await r.json();
     return Array.isArray(data) ? data : [];
-  } catch(e){ return []; }
+  } catch(e){ console.warn('loadDB fehlgeschlagen:', e); return []; }
 }
 
 async function loadAnfragen(){

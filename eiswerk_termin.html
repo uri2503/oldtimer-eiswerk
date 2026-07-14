@@ -75,7 +75,7 @@ footer{border-top:1px solid var(--grey2);padding:20px 24px;text-align:center;fon
 
 <script>
 const SUPA_URL  = 'https://ysqzdqazcgyuzdorauiq.supabase.co';
-const SUPA_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlzcXpkcWF6Y2d5dXpkb3JhdWlxIiwicm9sZSI6ImFub24iLCJpYXQiOjE2OTY3NTI0MjksImV4cCI6MjAxMjMyODQyOX0.RpNpOmNqLXr6YmjDYa8nM6HRJrGQmqmvJZLxfGNhQHc';
+const SUPA_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlzcXpkcWF6Y2d5dXpkb3JhdWlxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk5ODM0NzcsImV4cCI6MjA5NTU1OTQ3N30.u5cbSVniUl5Zvlf2rdpnjtvDyKvv9csmPwvdtnEwWzE';
 const HEADERS   = {'apikey':SUPA_ANON,'Authorization':`Bearer ${SUPA_ANON}`,'Content-Type':'application/json'};
 
 let selectedSlot = null;
@@ -96,10 +96,12 @@ async function load(){
   if(!token){ showError('Ungültiger Link.'); return; }
 
   try {
-    const vData = await fetch(
+    const vResp = await fetch(
       `${SUPA_URL}/rest/v1/eiswerk_terminvorschlaege?token=eq.${token}&select=*`,
       {headers:HEADERS}
-    ).then(r=>r.json());
+    );
+    if(!vResp.ok) throw new Error(`HTTP ${vResp.status}`);
+    const vData = await vResp.json();
 
     if(!vData?.length){ showError('Dieser Link ist nicht mehr gültig oder wurde bereits verwendet.'); return; }
     vorschlag = vData[0];
@@ -110,22 +112,18 @@ async function load(){
     }
 
     // Anfrage laden
-    const aData = await fetch(
+    const aResp = await fetch(
       `${SUPA_URL}/rest/v1/eiswerk_anfragen?id=eq.${vorschlag.anfrage_id}&select=*`,
       {headers:HEADERS}
-    ).then(r=>r.json());
+    );
+    if(!aResp.ok) throw new Error(`HTTP ${aResp.status}`);
+    const aData = await aResp.json();
     anfrage = aData?.[0] || null;
 
     showAuswahl();
   } catch(e){
-    // Demo ohne Supabase
-    vorschlag = {
-      slot_1: new Date(Date.now()+7*86400000).toISOString(),
-      slot_2: new Date(Date.now()+8*86400000).toISOString(),
-      status: 'offen', anfrage_id: 1
-    };
-    anfrage = { fahrzeug:'Mercedes-Benz 500 SL (Cab, 80-89) · 245 PS', baujahr:1988 };
-    showAuswahl();
+    console.error('Terminvorschläge konnten nicht geladen werden:', e);
+    showError('Die Terminvorschläge konnten gerade nicht geladen werden. Bitte versuchen Sie es in ein paar Minuten erneut oder kontaktieren Sie uns per WhatsApp.');
   }
 }
 
@@ -177,19 +175,28 @@ function selectSlot(el, nr){
 
 async function confirm(){
   if(!selectedSlot) return;
-  document.getElementById('btn-confirm').disabled = true;
-  document.getElementById('btn-confirm').textContent = 'Wird gespeichert…';
+  const btn = document.getElementById('btn-confirm');
+  btn.disabled = true;
+  btn.textContent = 'Wird gespeichert…';
 
   try {
-    await fetch(`${SUPA_URL}/rest/v1/eiswerk_terminvorschlaege?id=eq.${vorschlag.id}`,{
+    const r1 = await fetch(`${SUPA_URL}/rest/v1/eiswerk_terminvorschlaege?id=eq.${vorschlag.id}`,{
       method:'PATCH', headers:HEADERS,
       body:JSON.stringify({status:'bestaetigt', bestaetigt_slot:selectedSlot, bestaetigt_am:new Date().toISOString()})
     });
-    await fetch(`${SUPA_URL}/rest/v1/eiswerk_anfragen?id=eq.${vorschlag.anfrage_id}`,{
+    if(!r1.ok) throw new Error(`HTTP ${r1.status}`);
+    const r2 = await fetch(`${SUPA_URL}/rest/v1/eiswerk_anfragen?id=eq.${vorschlag.anfrage_id}`,{
       method:'PATCH', headers:HEADERS,
       body:JSON.stringify({status:'fix', termin_datum:selectedSlot})
     });
-  } catch(e){ console.warn(e); }
+    if(!r2.ok) throw new Error(`HTTP ${r2.status}`);
+  } catch(e){
+    console.error('Terminbestätigung fehlgeschlagen:', e);
+    btn.disabled = false;
+    btn.textContent = 'Termin verbindlich bestätigen →';
+    alert('Die Bestätigung konnte nicht gespeichert werden. Bitte versuchen Sie es erneut oder kontaktieren Sie uns per WhatsApp.');
+    return;
+  }
 
   showBestaetigt(selectedSlot);
 }
