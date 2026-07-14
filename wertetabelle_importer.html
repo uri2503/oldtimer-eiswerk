@@ -96,10 +96,14 @@ h1{font-size:22px;font-weight:700;margin-bottom:6px;}
 /* QUEUE */
 .queue-panel{background:var(--panel);border:1px solid var(--border);border-radius:6px;padding:14px 18px;margin-bottom:20px;display:none;}
 .queue-panel.show{display:block;}
-.queue-title{font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;}
+.queue-title{font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;gap:10px;}
+.queue-clear{font-size:10px;letter-spacing:.05em;text-transform:none;color:var(--muted);background:none;border:1px solid var(--border2);border-radius:2px;padding:3px 9px;cursor:pointer;flex-shrink:0;}
+.queue-clear:hover{border-color:var(--red);color:var(--red);}
 .queue-list{display:flex;flex-direction:column;gap:6px;max-height:260px;overflow-y:auto;}
 .queue-item{display:flex;align-items:center;gap:8px;font-size:12px;padding:7px 9px;border-radius:3px;background:var(--card);border:1px solid transparent;}
 .queue-item.active{border-color:var(--blue);}
+.queue-item.retryable{cursor:pointer;}
+.queue-item.retryable:hover{border-color:var(--blue);background:#1f1f1f;}
 .queue-icon{width:16px;text-align:center;flex-shrink:0;}
 .queue-name{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#ccc;}
 .queue-status{font-size:11px;color:var(--muted);flex-shrink:0;}
@@ -137,7 +141,10 @@ footer{border-top:1px solid var(--border);padding:16px 24px;text-align:center;fo
 
   <!-- QUEUE -->
   <div class="queue-panel" id="queue-panel">
-    <div class="queue-title" id="queue-progress-text">Warteschlange</div>
+    <div class="queue-title">
+      <span id="queue-progress-text">Warteschlange</span>
+      <button class="queue-clear" onclick="resetAll()">✕ Liste leeren</button>
+    </div>
     <div class="queue-list" id="queue-list"></div>
   </div>
 
@@ -276,12 +283,24 @@ function renderQueueList(){
     `Warteschlange — Foto ${Math.min(queueIndex+1, queue.length)} von ${queue.length}`;
 
   const iconMap = {pending:'⏳', analyzing:'🔄', ready:'👀', imported:'✅', error:'❌', skipped:'⏭️'};
-  document.getElementById('queue-list').innerHTML = queue.map((q,i)=>`
-    <div class="queue-item ${i===queueIndex?'active':''}">
+  document.getElementById('queue-list').innerHTML = queue.map((q,i)=>{
+    const retryable = q.status==='error' || q.status==='skipped';
+    const label = queueStatusLabel(q) + (retryable ? ' · klicken zum Wiederholen' : '');
+    return `
+    <div class="queue-item ${i===queueIndex?'active':''} ${retryable?'retryable':''}" ${retryable?`onclick="retryQueueItem(${i})"`:''}>
       <span class="queue-icon">${iconMap[q.status]||'⏳'}</span>
       <span class="queue-name">${q.resultLabel || q.name}</span>
-      <span class="queue-status ${q.status==='imported'?'ok':q.status==='error'?'err':q.status==='skipped'?'skip':''}">${queueStatusLabel(q)}</span>
-    </div>`).join('');
+      <span class="queue-status ${q.status==='imported'?'ok':q.status==='error'?'err':q.status==='skipped'?'skip':''}">${label}</span>
+    </div>`;
+  }).join('');
+}
+
+// Nächstes noch offene Foto in der Warteschlange finden (überspringt bereits erledigte)
+function findNextPendingIndex(fromIdx){
+  for(let i=fromIdx; i<queue.length; i++){
+    if(queue[i].status === 'pending') return i;
+  }
+  return queue.length;
 }
 
 // Nächstes Foto aus der Warteschlange laden und automatisch analysieren
@@ -303,13 +322,24 @@ async function startQueueItem(idx){
   await analyseImage();
 }
 
+// Ein übersprungenes oder fehlgeschlagenes Foto erneut versuchen (auch nach Abschluss der Warteschlange)
+function retryQueueItem(idx){
+  const item = queue[idx];
+  if(!item || (item.status !== 'skipped' && item.status !== 'error')) return;
+  item.status = 'pending';
+  item.error = null;
+  item.parsedData = null;
+  item.resultLabel = null;
+  startQueueItem(idx);
+}
+
 function skipCurrent(){
   const item = queue[queueIndex];
   if(item){ item.status='skipped'; item.resultLabel = item.resultLabel || item.name; }
   renderQueueList();
   document.getElementById('result-area').innerHTML = '';
   document.getElementById('success-banner').classList.remove('show');
-  startQueueItem(queueIndex+1);
+  startQueueItem(findNextPendingIndex(queueIndex+1));
 }
 
 function finishQueue(){
@@ -325,6 +355,10 @@ function finishQueue(){
       <div class="result-count" style="margin-top:6px;">
         ${imported.length} importiert · ${failed.length} fehlgeschlagen · ${skipped.length} übersprungen
       </div>
+      ${(failed.length||skipped.length) ? `<div class="result-count" style="margin-top:8px;color:#888;">Übersprungene/fehlgeschlagene Fotos oben in der Warteschlange anklicken, um sie erneut zu versuchen.</div>` : ''}
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-ghost" onclick="resetAll()">✕ Liste leeren</button>
     </div>
   `;
   setStatus(failed.length ? `⚠️ ${failed.length} Foto(s) konnten nicht importiert werden — siehe Warteschlange oben.` : '', false, !!failed.length);
@@ -571,10 +605,11 @@ async function importData(){
   }
 
   if(queue.length > 1){
+    const resumeFrom = queueIndex + 1;
     setTimeout(()=>{
       document.getElementById('result-area').innerHTML = '';
       document.getElementById('success-banner').classList.remove('show');
-      startQueueItem(queueIndex+1);
+      startQueueItem(findNextPendingIndex(resumeFrom));
     }, 900);
   }
 }
