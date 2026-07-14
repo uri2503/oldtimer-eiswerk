@@ -420,6 +420,7 @@ Wichtige Korrekturregeln:
 - Bauzeiten wie "7685" = "76-85", "7980" = "79-80" etc.
 - Note1 ist immer höher als Note2 > Note3 > Note4 > Note5
 - Negative Trends haben ein Minus-Zeichen
+- Enthält ein Modellname Spitznamen/Zusätze, die im Original in Anführungszeichen stehen (z.B. M3 Evo/„Europameister"/„Cecotto"), gib sie im JSON OHNE Anführungszeichen wieder (z.B. "M3 Evo/Europameister/Cecotto"). Verwende niemals doppelte Anführungszeichen (") innerhalb eines JSON-String-Werts, das macht das JSON ungültig.
 
 Antworte NUR mit validem JSON, kein Text davor oder danach:
 {
@@ -476,10 +477,16 @@ Antworte NUR mit validem JSON, kein Text davor oder danach:
     try {
       parsed = JSON.parse(clean);
     } catch(parseErr){
-      if(data.stop_reason === 'max_tokens'){
-        throw new Error('Antwort der KI wurde abgeschnitten (Tabelle zu groß). Bitte erneut versuchen oder Tabelle in zwei Fotos aufteilen.');
+      // Reparaturversuch: typografische Anführungszeichen in Modellnamen entfernen,
+      // die trotz Prompt-Anweisung das JSON brechen (z.B. Spitznamen wie „Cecotto")
+      try {
+        parsed = JSON.parse(clean.replace(/[„""‚''‹›«»]/g, ''));
+      } catch(parseErr2){
+        if(data.stop_reason === 'max_tokens'){
+          throw new Error('Antwort der KI wurde abgeschnitten (Tabelle zu groß). Bitte erneut versuchen oder Tabelle in zwei Fotos aufteilen.');
+        }
+        throw parseErr;
       }
-      throw parseErr;
     }
 
     item.parsedData  = parsed;
