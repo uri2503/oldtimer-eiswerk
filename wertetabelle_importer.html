@@ -44,6 +44,7 @@ h1{font-size:22px;font-weight:700;margin-bottom:6px;}
 .progress-track{height:3px;background:var(--border);border-radius:2px;overflow:hidden;}
 .progress-fill{height:100%;background:linear-gradient(90deg,var(--blue),var(--ice2));border-radius:2px;transition:width .4s ease;width:0%;}
 .status-msg{font-size:13px;color:var(--ice2);margin-bottom:16px;min-height:20px;display:flex;align-items:center;gap:8px;}
+.status-msg.error{color:var(--red);}
 .spinner{width:16px;height:16px;border:2px solid var(--border2);border-top-color:var(--blue);border-radius:50%;animation:spin .8s linear infinite;flex-shrink:0;}
 @keyframes spin{to{transform:rotate(360deg);}}
 
@@ -161,7 +162,7 @@ footer{border-top:1px solid var(--border);padding:16px 24px;text-align:center;fo
 <script>
 const PROXY_URL  = 'https://ysqzdqazcgyuzdorauiq.supabase.co/functions/v1/claude-proxy';
 const SUPA_URL   = 'https://ysqzdqazcgyuzdorauiq.supabase.co';
-const SUPA_ANON  = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlzcXpkcWF6Y2d5dXpkb3JhdWlxIiwicm9sZSI6ImFub24iLCJpYXQiOjE2OTY3NTI0MjksImV4cCI6MjAxMjMyODQyOX0.RpNpOmNqLXr6YmjDYa8nM6HRJrGQmqmvJZLxfGNhQHc';
+const SUPA_ANON  = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlzcXpkcWF6Y2d5dXpkb3JhdWlxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk5ODM0NzcsImV4cCI6MjA5NTU1OTQ3N30.u5cbSVniUl5Zvlf2rdpnjtvDyKvv9csmPwvdtnEwWzE';
 const SUPA_HDR   = {'apikey':SUPA_ANON,'Authorization':`Bearer ${SUPA_ANON}`,'Content-Type':'application/json'};
 
 let imageDataUrl = null;
@@ -174,14 +175,15 @@ async function loadDB(){
   try {
     const r = await fetch(`${SUPA_URL}/rest/v1/eiswerk_wertetabelle?select=marke,baureihe,modelle&order=baureihe`,
       {headers:{'apikey':SUPA_ANON,'Authorization':`Bearer ${SUPA_ANON}`}});
+    if(!r.ok) throw new Error(`HTTP ${r.status}`);
     const data = await r.json();
     db = Array.isArray(data) ? data : [];
-  } catch(e){ db=[]; }
+  } catch(e){ db=[]; console.warn('loadDB fehlgeschlagen:', e); }
   renderDBStatus();
 }
 async function saveDB(){
   try {
-    await fetch(`${SUPA_URL}/rest/v1/eiswerk_wertetabelle`, {
+    const r = await fetch(`${SUPA_URL}/rest/v1/eiswerk_wertetabelle`, {
       method:'POST',
       headers:{...SUPA_HDR,'Prefer':'resolution=merge-duplicates,return=minimal'},
       body:JSON.stringify({
@@ -191,8 +193,13 @@ async function saveDB(){
         updated_am:new Date().toISOString()
       })
     });
-  } catch(e){ console.warn(e); }
-  await loadDB();
+    if(!r.ok) throw new Error(`HTTP ${r.status}: ${await r.text()}`);
+    await loadDB();
+    return true;
+  } catch(e){
+    console.warn('saveDB fehlgeschlagen:', e);
+    return false;
+  }
 }
 function renderDBStatus(){
   const el=document.getElementById('db-chips');
@@ -225,8 +232,9 @@ function setProgress(p, msg){
   document.getElementById('progress-pct').textContent = p+'%';
   document.getElementById('progress-text').textContent = msg;
 }
-function setStatus(msg, loading=false){
+function setStatus(msg, loading=false, isError=false){
   const el = document.getElementById('status-msg');
+  el.classList.toggle('error', isError);
   el.innerHTML = loading
     ? `<div class="spinner"></div><span>${msg}</span>`
     : msg ? `<span>${msg}</span>` : '';
@@ -259,7 +267,7 @@ Extrahiere ALLE Zeilen der Tabelle. Ignoriere Überschriften und Fußnoten.
 
 Wichtige Korrekturregeln:
 - "2000" oder "200 D" mit 55PS = "200 D" (Diesel)
-- "2200" = "220 D"  
+- "2200" = "220 D"
 - "2400" = "240 D"
 - Bauzeiten wie "7685" = "76-85", "7980" = "79-80" etc.
 - Note1 ist immer höher als Note2 > Note3 > Note4 > Note5
@@ -402,13 +410,21 @@ async function importData(){
   }
   const btn = document.querySelector('.btn-green');
   if(btn){ btn.disabled=true; btn.textContent='Wird gespeichert…'; }
-  await saveDB();
+  setStatus('');
+  const ok = await saveDB();
+  if(btn){ btn.disabled=false; btn.textContent='✓ In Datenbank importieren'; }
+
+  if(!ok){
+    document.getElementById('success-banner').classList.remove('show');
+    setStatus('❌ Import fehlgeschlagen — Datenbank war nicht erreichbar. Bitte erneut versuchen.', false, true);
+    return;
+  }
+
   const total = db.reduce((s,b)=>s+(b.modelle?.length||0),0);
   document.getElementById('success-title').textContent = `✅ ${parsedData.baureihe} importiert!`;
   document.getElementById('success-sub').textContent =
     `${parsedData.modelle.length} Modelle · DB jetzt: ${db.length} Baureihen, ${total} Modelle gesamt`;
   document.getElementById('success-banner').classList.add('show');
-  if(btn){ btn.disabled=false; btn.textContent='✓ In Datenbank importieren'; }
 }
 
 // JSON exportieren (für Supabase / Tool)
