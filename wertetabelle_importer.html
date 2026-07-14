@@ -568,14 +568,25 @@ function updateField(idx, field, val){
 }
 
 // In DB importieren
+function normalizeBaureihe(s){
+  return (s||'').toLowerCase().replace(/\s+/g,' ').trim();
+}
+
 async function importData(){
   if(!parsedData) return;
-  const exists = db.find(b => b.baureihe === parsedData.baureihe);
+  const norm = normalizeBaureihe(parsedData.baureihe);
+  const exists = db.find(b => normalizeBaureihe(b.baureihe) === norm);
   if(exists){
-    if(!confirm(`🛑 "${parsedData.baureihe}" ist bereits in der Datenbank (${exists.modelle?.length||0} Modelle).\nÜberschreiben?`)){
+    const sameName = exists.baureihe === parsedData.baureihe;
+    const msg = sameName
+      ? `🛑 "${parsedData.baureihe}" ist bereits in der Datenbank (${exists.modelle?.length||0} Modelle).\nÜberschreiben?`
+      : `🛑 "${exists.baureihe}" ist bereits in der Datenbank (${exists.modelle?.length||0} Modelle) — die KI hat diesmal "${parsedData.baureihe}" erkannt (vermutlich dieselbe Baureihe, leicht anders gelesen).\nÜberschreiben?`;
+    if(!confirm(msg)){
       if(queue.length > 1) skipCurrent();
       return;
     }
+    // Vorhandenen Namen beibehalten, damit der Upsert wirklich diese Zeile trifft und keine Dublette anlegt
+    parsedData.baureihe = exists.baureihe;
   }
   const btn = document.querySelector('.btn-green');
   if(btn){ btn.disabled=true; btn.textContent='Wird gespeichert…'; }
