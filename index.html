@@ -245,8 +245,8 @@
 
     <div class="field">
       <label>Marke</label>
-      <select id="sel-marke" onchange="onMarkeChange()">
-        <option value="">— bitte wählen —</option>
+      <select id="sel-marke" onchange="onMarkeChange()" disabled>
+        <option value="">Wird geladen…</option>
       </select>
     </div>
     <div class="field">
@@ -490,64 +490,19 @@ const SUPA_URL    = 'https://ysqzdqazcgyuzdorauiq.supabase.co';
 const SUPA_ANON   = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlzcXpkcWF6Y2d5dXpkb3JhdWlxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk5ODM0NzcsImV4cCI6MjA5NTU1OTQ3N30.u5cbSVniUl5Zvlf2rdpnjtvDyKvv9csmPwvdtnEwWzE';
 
 // ══════════════════════════════════════════════
-// DATENBANK
+// DATENBANK — live aus Supabase geladen (Wertetabelle Importer)
 // ══════════════════════════════════════════════
-const DB = [
-  {
-    marke:"Mercedes-Benz", baureihe:"R107 / C107 (SL/SLC)",
-    modelle:[
-      {m:"280SL",         k:"Cab",bz:"74-85",ps:185, n1:46300,n2:29800,n3:17200,n4:8800, n5:4000},
-      {m:"280 SLC",       k:"Cpé",bz:"74-81",ps:185, n1:35500,n2:21200,n3:12100,n4:6200, n5:3000},
-      {m:"300SL",         k:"Cab",bz:"85-89",ps:188, n1:64200,n2:41300,n3:23900,n4:12200,n5:5500},
-      {m:"350 SL",        k:"Cab",bz:"71-80",ps:200, n1:42200,n2:27100,n3:15800,n4:8000, n5:3600},
-      {m:"350 SLC",       k:"Cpé",bz:"71-80",ps:200, n1:33800,n2:20100,n3:11500,n4:5900, n5:2900},
-      {m:"380SL",         k:"Cab",bz:"80-85",ps:218, n1:48500,n2:31300,n3:17900,n4:9100, n5:4100},
-      {m:"380 SLC",       k:"Cpé",bz:"80-81",ps:218, n1:45600,n2:26200,n3:15000,n4:7700, n5:3800},
-      {m:"420 SL",        k:"Cab",bz:"85-89",ps:218, n1:61100,n2:39300,n3:22600,n4:11500,n5:5200},
-      {m:"450 SL",        k:"Cab",bz:"71-80",ps:225, n1:46900,n2:30200,n3:17400,n4:8800, n5:4000},
-      {m:"450 SLC",       k:"Cpé",bz:"72-80",ps:225, n1:40500,n2:23700,n3:13300,n4:6800, n5:3300},
-      {m:"450 SLC 5.0",   k:"Cpé",bz:"78-80",ps:240, n1:63500,n2:37200,n3:21700,n4:11200,n5:5400},
-      {m:"500 SLC",       k:"Cpé",bz:"80-81",ps:240, n1:67300,n2:39600,n3:22900,n4:11700,n5:5700},
-      {m:"500 SL",        k:"Cab",bz:"80-89",ps:245, n1:66900,n2:43000,n3:24700,n4:12600,n5:5700},
-      {m:"560 SL (USA)",  k:"Cab",bz:"86-89",ps:231, n1:55600,n2:35800,n3:20600,n4:10500,n5:4800},
-    ]
-  },
-  {
-    marke:"Mercedes-Benz", baureihe:"S124 (E-Klasse T-Modell)",
-    modelle:[
-      {m:"200T",               k:"Kom",bz:"85-89",ps:109, n1:22200,n2:12200,n3:6200, n4:3300,n5:1700},
-      {m:"200T",               k:"Kom",bz:"89-90",ps:105, n1:22200,n2:12200,n3:6200, n4:3300,n5:1700},
-      {m:"200 TE",             k:"Kom",bz:"88-89",ps:122, n1:21300,n2:11600,n3:6000, n4:3200,n5:1600},
-      {m:"200 TE",             k:"Kom",bz:"89-92",ps:118, n1:22300,n2:12200,n3:6300, n4:3300,n5:1700},
-      {m:"200 TE",             k:"Kom",bz:"92-93",ps:136, n1:22600,n2:12500,n3:6400, n4:3400,n5:1800},
-      {m:"E200T",              k:"Kom",bz:"93-96",ps:136, n1:21900,n2:11900,n3:6200, n4:3200,n5:1600},
-      {m:"200 TD",             k:"Kom",bz:"85-89",ps:72,  n1:23300,n2:12500,n3:6500, n4:3400,n5:1700},
-      {m:"200 TD",             k:"Kom",bz:"89-91",ps:75,  n1:24100,n2:13300,n3:6700, n4:3500,n5:1800},
-      {m:"220 TE",             k:"Kom",bz:"92-93",ps:150, n1:24900,n2:13600,n3:7100, n4:3600,n5:1900},
-      {m:"E220T",              k:"Kom",bz:"92-96",ps:150, n1:24100,n2:13200,n3:6800, n4:3500,n5:1800},
-      {m:"230 TE",             k:"Kom",bz:"85-89",ps:136, n1:23200,n2:12700,n3:6500, n4:3400,n5:1800},
-      {m:"230 TE",             k:"Kom",bz:"89-92",ps:132, n1:23700,n2:13000,n3:6600, n4:3500,n5:1800},
-      {m:"250 TD",             k:"Kom",bz:"85-89",ps:90,  n1:25700,n2:14100,n3:7100, n4:3700,n5:1800},
-      {m:"250 D",              k:"Kom",bz:"89-93",ps:94,  n1:26400,n2:14300,n3:7400, n4:3600,n5:1800},
-      {m:"E250 Diesel T",      k:"Kom",bz:"92-96",ps:113, n1:27400,n2:14900,n3:7700, n4:3800,n5:2000},
-      {m:"280 TE",             k:"Kom",bz:"92-93",ps:197, n1:31000,n2:16300,n3:8400, n4:4400,n5:2300},
-      {m:"E280T",              k:"Kom",bz:"93-96",ps:197, n1:29300,n2:16200,n3:8300, n4:4300,n5:2200},
-      {m:"300 TE",             k:"Kom",bz:"85-89",ps:188, n1:27000,n2:14800,n3:7600, n4:3800,n5:2100},
-      {m:"300 TE 4Matic",      k:"Kom",bz:"89-92",ps:180, n1:32000,n2:17000,n3:8700, n4:4400,n5:2300,matic:true},
-      {m:"300 TE-24",          k:"Kom",bz:"89-92",ps:220, n1:40200,n2:22000,n3:11200,n4:5900,n5:3000},
-      {m:"E300T 4Matic",       k:"Kom",bz:"93-95",ps:180, n1:31600,n2:16700,n3:8500, n4:4400,n5:2300,matic:true},
-      {m:"300 TD",             k:"Kom",bz:"86-89",ps:109, n1:26600,n2:14400,n3:7500, n4:3700,n5:1800},
-      {m:"300 TD",             k:"Kom",bz:"89-93",ps:113, n1:27900,n2:15500,n3:7900, n4:4000,n5:2100},
-      {m:"E300 Diesel T",      k:"Kom",bz:"92-96",ps:136, n1:27400,n2:14900,n3:7800, n4:3900,n5:2100},
-      {m:"300 TD Turbo 4Matic",k:"Kom",bz:"85-89",ps:143, n1:26200,n2:14300,n3:7400, n4:3700,n5:1800,matic:true},
-      {m:"300 TD Turbo 4Matic",k:"Kom",bz:"89-93",ps:147, n1:27400,n2:15100,n3:7700, n4:4000,n5:2100,matic:true},
-      {m:"E300 Turbodiesel T", k:"Kom",bz:"93-96",ps:147, n1:26700,n2:14600,n3:7600, n4:3800,n5:1900},
-      {m:"320 TE",             k:"Kom",bz:"92-93",ps:220, n1:38400,n2:21100,n3:10700,n4:5600,n5:2900},
-      {m:"E320T",              k:"Kom",bz:"92-96",ps:220, n1:38000,n2:20900,n3:10600,n4:5500,n5:2800},
-      {m:"E36 AMG T",          k:"Kom",bz:"93-96",ps:272, n1:115000,n2:63000,n3:32000,n4:17000,n5:8500,amg:true},
-    ]
-  }
-];
+let DB = [];
+
+async function loadDB(){
+  try {
+    const r = await fetch(`${SUPA_URL}/rest/v1/eiswerk_wertetabelle?select=marke,baureihe,modelle&order=baureihe`,
+      {headers:{'apikey':SUPA_ANON,'Authorization':`Bearer ${SUPA_ANON}`}});
+    if(!r.ok) throw new Error(`HTTP ${r.status}`);
+    const data = await r.json();
+    DB = Array.isArray(data) ? data : [];
+  } catch(e){ console.warn('Wertdatenbank konnte nicht geladen werden:', e); DB = []; }
+}
 
 // ══════════════════════════════════════════════
 // STATE
@@ -563,10 +518,13 @@ let state = {
 // ══════════════════════════════════════════════
 // INIT
 // ══════════════════════════════════════════════
-(function init(){
-  const marken=[...new Set(DB.map(b=>b.marke))];
+(async function init(){
+  await loadDB();
   const sel=document.getElementById('sel-marke');
+  sel.innerHTML = '<option value="">— bitte wählen —</option>';
+  const marken=[...new Set(DB.map(b=>b.marke))];
   marken.forEach(m=>{ let o=document.createElement('option'); o.value=m; o.text=m; sel.appendChild(o); });
+  sel.disabled = false;
 })();
 
 // ══════════════════════════════════════════════
