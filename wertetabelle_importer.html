@@ -200,6 +200,9 @@ let db = [];
 let queue = [];       // [{name, dataUrl, status, parsedData, resultLabel, error}]
 let queueIndex = -1;
 
+// HTML-Escape für aus OCR gewonnene Texte, damit ein Sonderzeichen (< & ") die Anzeige nicht zerstört
+const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
 // DB aus Supabase laden
 async function loadDB(){
   try {
@@ -234,7 +237,7 @@ async function saveDB(){
 function renderDBStatus(){
   const el=document.getElementById('db-chips');
   if(!db.length){el.innerHTML='<div class="db-chip">Noch leer</div>';return;}
-  el.innerHTML=db.map(b=>`<div class="db-chip">${b.baureihe} (${b.modelle?.length||0})</div>`).join('');
+  el.innerHTML=db.map(b=>`<div class="db-chip">${esc(b.baureihe)} (${b.modelle?.length||0})</div>`).join('');
 }
 
 // Fotos laden (eines oder mehrere) und Warteschlange aufbauen
@@ -289,8 +292,8 @@ function renderQueueList(){
     return `
     <div class="queue-item ${i===queueIndex?'active':''} ${retryable?'retryable':''}" ${retryable?`onclick="retryQueueItem(${i})"`:''}>
       <span class="queue-icon">${iconMap[q.status]||'⏳'}</span>
-      <span class="queue-name">${q.resultLabel || q.name}</span>
-      <span class="queue-status ${q.status==='imported'?'ok':q.status==='error'?'err':q.status==='skipped'?'skip':''}">${label}</span>
+      <span class="queue-name">${esc(q.resultLabel || q.name)}</span>
+      <span class="queue-status ${q.status==='imported'?'ok':q.status==='error'?'err':q.status==='skipped'?'skip':''}">${esc(label)}</span>
     </div>`;
   }).join('');
 }
@@ -519,9 +522,9 @@ function renderResult(data){
 
   const rows = data.modelle.map((m,i) => `
     <tr>
-      <td class="td-modell" contenteditable="true" oninput="updateField(${i},'m',this.textContent)">${m.m}</td>
-      <td contenteditable="true" oninput="updateField(${i},'k',this.textContent)">${m.k||'—'}</td>
-      <td contenteditable="true" oninput="updateField(${i},'bz',this.textContent)">${m.bz||'—'}</td>
+      <td class="td-modell" contenteditable="true" oninput="updateField(${i},'m',this.textContent)">${esc(m.m)}</td>
+      <td contenteditable="true" oninput="updateField(${i},'k',this.textContent)">${esc(m.k)||'—'}</td>
+      <td contenteditable="true" oninput="updateField(${i},'bz',this.textContent)">${esc(m.bz)||'—'}</td>
       <td>${m.ps||'—'}</td>
       <td class="td-n1" contenteditable="true" oninput="updateField(${i},'n1',this.textContent)">${fmt(m.n1)}</td>
       <td contenteditable="true" oninput="updateField(${i},'n2',this.textContent)">${fmt(m.n2)}</td>
@@ -536,7 +539,7 @@ function renderResult(data){
     <div class="result-box">
       <div class="result-header">
         <div>
-          <div class="result-baureihe">${data.marke} · ${data.baureihe}</div>
+          <div class="result-baureihe">${esc(data.marke)} · ${esc(data.baureihe)}</div>
           <div class="result-count">${data.modelle.length} Modelle erkannt · Werte direkt editierbar</div>
         </div>
       </div>
@@ -567,8 +570,10 @@ function updateField(idx, field, val){
   if(!parsedData?.modelle[idx]) return;
   const num = ['n1','n2','n3','n4','n5','ps','zyl','trend','neupreis'];
   if(num.includes(field)){
-    const cleaned = val.replace(/[^\d\-\.]/g,'');
-    parsedData.modelle[idx][field] = cleaned ? parseFloat(cleaned) : 0;
+    // Deutsche Tausenderpunkte entfernen ("12.500" -> 12500). Alle editierbaren Zahlenfelder
+    // (n1-n5, PS, Trend, Neupreis) sind Ganzzahlen — parseFloat("12.500") würde sonst fälschlich 12,5 ergeben.
+    const cleaned = val.replace(/[^\d-]/g,'');
+    parsedData.modelle[idx][field] = (cleaned && cleaned !== '-') ? parseInt(cleaned,10) : 0;
   } else {
     parsedData.modelle[idx][field] = val.trim();
   }
