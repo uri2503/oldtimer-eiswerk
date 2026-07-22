@@ -445,7 +445,7 @@ body { background: var(--black); color: var(--white); font-family: 'Raleway', sa
 
     <div class="modal-footer">
       <button class="btn btn-ghost" onclick="closeModal()">Abbrechen</button>
-      <button class="btn btn-green" onclick="saveVorschlag()">✓ Vorschlag speichern & Link generieren</button>
+      <button class="btn btn-green" id="btn-save-vorschlag" onclick="saveVorschlag()">✓ Vorschlag speichern & Link generieren</button>
     </div>
   </div>
 </div>
@@ -532,24 +532,19 @@ async function supa(path, opts={}){
 async function loadAll(){
   try {
     allAnfragen = await supa('eiswerk_anfragen?order=erstellt_am.desc&limit=200');
-    allTermine  = await supa('eiswerk_termine?order=erstellt_am.desc&limit=200').catch(()=>[]);
+    allTermine  = await supa('eiswerk_terminvorschlaege?order=erstellt_am.desc&limit=200').catch(()=>[]);
     updateBadges();
     renderDashboard();
   } catch(e){
-    // Demo-Daten wenn Supabase nicht erreichbar
-    allAnfragen = getDemoData();
+    // KEINE Demo-Daten mehr vortäuschen — echten Fehlerzustand zeigen, damit der Betreiber
+    // nicht mit erfundenen Anfragen arbeitet, wenn die Datenbank gerade nicht erreichbar ist.
+    console.error('Daten konnten nicht aus Supabase geladen werden:', e);
+    allAnfragen = [];
     allTermine  = [];
     updateBadges();
     renderDashboard();
+    alert('⚠️ Verbindung zur Datenbank fehlgeschlagen — es werden keine Anfragen angezeigt. Bitte Seite neu laden.');
   }
-}
-
-function getDemoData(){
-  return [
-    {id:1, fahrzeug:'Mercedes-Benz 500 SL (Cab, 80-89) · 245 PS', marke:'Mercedes-Benz', baureihe:'R107', baujahr:1988, fahrzeug_note:4, unterboden:'teilbehandelt', versiegelung:false, kosten_min:1500, kosten_max:2200, marktpotenzial:12100, erstellt_am: new Date().toISOString(), status:'neu'},
-    {id:2, fahrzeug:'Mercedes-Benz E220T (Kom, 92-96) · 150 PS', marke:'Mercedes-Benz', baureihe:'S124', baujahr:1994, fahrzeug_note:3, unterboden:'original', versiegelung:true, kosten_min:1500, kosten_max:2300, marktpotenzial:18300, erstellt_am: new Date(Date.now()-86400000).toISOString(), status:'warten'},
-    {id:3, fahrzeug:'Porsche 911 G-Modell · 204 PS', marke:'Porsche', baureihe:null, baujahr:1985, fahrzeug_note:3, unterboden:'stark', versiegelung:false, kosten_min:1900, kosten_max:2800, marktpotenzial:null, erstellt_am: new Date(Date.now()-172800000).toISOString(), status:'fix'},
-  ];
 }
 
 function updateBadges(){
@@ -725,9 +720,13 @@ async function saveVorschlag(){
 
   const token = Math.random().toString(36).slice(2,10) + Date.now().toString(36);
 
+  // Button sperren, damit ein Doppelklick nicht zwei Terminvorschläge (mit je eigenem Token) anlegt
+  const btn = document.getElementById('btn-save-vorschlag');
+  if(btn){ btn.disabled = true; btn.textContent = 'Wird gespeichert…'; }
+
   // In Supabase speichern (eiswerk_terminvorschlaege)
   try {
-    await fetch(`${SUPA_URL}/rest/v1/eiswerk_terminvorschlaege`, {
+    const r1 = await fetch(`${SUPA_URL}/rest/v1/eiswerk_terminvorschlaege`, {
       method:'POST', headers:{...HEADERS,'Prefer':'return=representation'},
       body: JSON.stringify({
         anfrage_id: activeAnfrage.id,
@@ -736,13 +735,24 @@ async function saveVorschlag(){
         erstellt_am: new Date().toISOString()
       })
     });
+    if(!r1.ok) throw new Error(`HTTP ${r1.status}: ${await r1.text()}`);
     // Status der Anfrage auf 'warten' setzen
-    await fetch(`${SUPA_URL}/rest/v1/eiswerk_anfragen?id=eq.${activeAnfrage.id}`, {
+    const r2 = await fetch(`${SUPA_URL}/rest/v1/eiswerk_anfragen?id=eq.${activeAnfrage.id}`, {
       method:'PATCH', headers: HEADERS,
       body: JSON.stringify({status:'warten'})
     });
+    if(!r2.ok) throw new Error(`HTTP ${r2.status}: ${await r2.text()}`);
     activeAnfrage.status = 'warten';
-  } catch(e){ console.warn('Supabase:', e); }
+  } catch(e){
+    // Fehlschlag NICHT verschlucken: der Bestätigungslink wäre sonst tot, weil der Token nie
+    // in der DB landet — der Kunde bekäme "Link nicht mehr gültig".
+    console.error('Terminvorschlag konnte nicht gespeichert werden:', e);
+    if(btn){ btn.disabled = false; btn.textContent = '✓ Vorschlag speichern & Link generieren'; }
+    alert('❌ Der Terminvorschlag konnte nicht gespeichert werden — der Bestätigungslink wäre ungültig. Bitte erneut versuchen.');
+    return;
+  }
+
+  if(btn){ btn.disabled = false; btn.textContent = '✓ Vorschlag speichern & Link generieren'; }
 
   // Link generieren und anzeigen
   const confirmUrl = `https://uri2503.github.io/oldtimer-eiswerk/eiswerk_termin.html?token=${token}`;
